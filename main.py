@@ -34,15 +34,18 @@ def help():
     print("--playlist 'name' delete song 'songid")
     print("--playlist 'name' delete album 'albumid")
     print("--playlist 'name' change name 'new name")
-    print("--search name 'song name'")
+    print("--search user 'string'")
+    print("--search songname 'song name'")
     print("--search artist 'song artist'")
     print("--search album 'song album'")
     print("--search genre 'song genre'")
+    print("--show friends")
+    print("--show playlists")
     print("--logout")
 
 
-def search_name(name):
-    print(name)
+def search_name(songname):
+    print(songname)
 
 def search_album(album):
     print(album)
@@ -111,6 +114,18 @@ def delete_playlist_album(name,albumid):
 def change_playlist_name(ogname,newname):
     print("Changed from "+ ogname+ " to " + newname)
 
+def show_friends():
+    print("You have x friends. They are: ")
+
+def show_playlists():
+    print("You have x playlists. They are: ")
+
+
+def search_user(string):
+    user=["xyz","mno","is4761","ishan"]
+    for u in user:
+        if u[:len(string)]==string:
+            print("Found " +u)
 
 
 def main():
@@ -149,18 +164,21 @@ def main():
                 search_artist(split[2])
             elif(split[1]=="album"):
                 search_album(split[2])
-            elif(split[1]=="name"):
+            elif(split[1]=="songname"):
                 search_name(split[2])
             elif(split[1]=="genre"):
                 search_genre(split[2])
+            elif(split[1]=="user"):
+                search_user(split[2])
         elif(split[0]=="playlist" and split[2]=="change" and split[3]=="name"):
             change_playlist_name(split[1],split[4])
+        elif(split[0]=="show"):
+            if(split[1]=="friends"):
+                show_friends()
+            elif(split[1]=="playlists"):
+                show_playlists()
         else:
             print("Invalid command. Try 'help' to get help!")
     exit()
 
 main()
-
-# show all playlists
-# sort
-# search by user email
