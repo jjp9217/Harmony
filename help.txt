@@ -2,3 +2,13 @@
 #  in the SELECT statement and bind the input values when you call the execute() method as follows.
 
 # cur.execute(sql, (value1,value2))
+
+
+conn, cur = sqlconnect.connect(su.SQL)
+    print("The number of parts: ", cur.rowcount)
+    row = cur.fetchone()
+
+    while row is not None:
+        print(row)
+        row = cur.fetchone()
+    sqlconnect.disconnect(conn)
