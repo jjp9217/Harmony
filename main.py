@@ -2,6 +2,7 @@
 @author: Ishan Shah
 file name: main.py
 """
+import sqlconnect
 
 LOGIN = False
 
@@ -129,6 +130,9 @@ def search_user(string):
 
 
 def main():
+    conn = sqlconnect.connect()
+    curs = conn.cursor()
+
     print("-----Welcome to Harmony-----")
     print("Do you want to login or register?")
     signup = input("Enter login to login and register to create a new account with Harmony: ")
@@ -179,6 +183,7 @@ def main():
                 show_playlists()
         else:
             print("Invalid command. Try 'help' to get help!")
+    sqlconnect.disconnect(conn)
     exit()
 
 main()
