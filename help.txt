@@ -1,0 +1,4 @@
+#  If you want to pass values to the SELECT statement, you use the placeholder  ( %s) 
+#  in the SELECT statement and bind the input values when you call the execute() method as follows.
+
+# cur.execute(sql, (value1,value2))
