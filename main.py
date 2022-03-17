@@ -1,6 +1,8 @@
 """
 @author: Ishan Shah
+@author: Jesse Pingitore
 file name: main.py
+Dependencies: psycopg2, sshtunnel
 """
 import sqlconnect
 
