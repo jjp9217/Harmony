@@ -1,6 +1,8 @@
 """
 @author: Ishan Shah
+@author: Jesse Pingitore
 file name: main.py
+Dependencies: psycopg2, sshtunnel
 """
 import sqlconnect
 
@@ -27,6 +29,9 @@ def help():
     print("\n")
     print("Commands to run:")
     print("--help")
+    print("--play song 'songid")
+    print("--play album 'albumid'")
+    print("--play playlist 'playlistname'")
     print("--follow 'email'")
     print("--unfollow 'email'")
     print("--create playlist 'name'")

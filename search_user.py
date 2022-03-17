@@ -1,0 +1,1 @@
+SQL = "SELECT * FROM p320_19.dummy;"
