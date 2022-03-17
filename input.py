@@ -25,10 +25,10 @@ if __name__ == "__main__":
     conn = sqlconnect.connect()
     cur = conn.cursor()
 
-    for line in file:
-        line = line.split(",")
-        print(line[artist_name_idx], line[song_duration_idx])
+    # for line in file:
+    #     line = line.split(",")
+    #     print(line[artist_name_idx], line[song_duration_idx])
         # cur.execute(f"INSERT INTO p320_19.artists(artistid, artist_name) Values (1,'{line[artist_name_idx]}');")
-    cur.execute(f"INSERT INTO p320_19.artists(artistid, artist_name) Values (1,'testing');")
+    cur.execute("INSERT INTO p320_19.artists(artistid, artist_name) Values (3,'The Look of Love');")
 
     file.close()

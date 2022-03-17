@@ -15,23 +15,20 @@ def connect():
 
 
     try:
-        with SSHTunnelForwarder((server_name, 22),
-                                ssh_username=username,
-                                ssh_password=password,
-                                remote_bind_address=('localhost', 5432)) as server:
-            server.start()
-            print("SSH tunnel established")
-            params = {
-                'database': db_name,
-                'user': username,
-                'password': password,
-                'host': 'localhost',
-                'port': server.local_bind_port
-            }
+        server = SSHTunnelForwarder((server_name, 22), ssh_username=username, ssh_password=password, remote_bind_address=('localhost', 5432))
+        server.start()
+        print("SSH tunnel established")
+        params = {
+            'database': db_name,
+            'user': username,
+            'password': password,
+            'host': 'localhost',
+            'port': server.local_bind_port
+        }
 
-            conn = psycopg2.connect(**params)
-            print("Connected to Database")
-            return conn
+        conn = psycopg2.connect(**params)
+        print("Connected to Database")
+        return conn
     except:
         print("Connection failed")
 
