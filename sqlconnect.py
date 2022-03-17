@@ -34,5 +34,5 @@ def connect():
 
 
 def disconnect(conn):
-    print("Database connection established")
+    print("Database disconnected")
     conn.close()
