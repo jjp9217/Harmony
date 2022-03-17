@@ -143,6 +143,9 @@ def main():
     signup = input("Enter login to login and register to create a new account with Harmony: ")
     if(signup =="register"):
         register()
+
+    #implicitly accept all other input as "Login"
+    #TODO we should handle a user creating an account also as a login
     while not LOGIN:
         login()
     help()
