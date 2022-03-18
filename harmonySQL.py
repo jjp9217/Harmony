@@ -37,6 +37,11 @@ show_playlists_sql="select name FROM playlist where username = '%s'"
 
 add_song_playlist_SQL=""
 
+#check if playlist belongs to user
+user_playlistid_check_sql="select playlistid FROM playlists where username = '%s'"
+
+
+
 """
     Global Variables
 """
@@ -95,6 +100,7 @@ def register():
 
         # Make the change
         CONNECTION.commit()
+        global USERNAME = username
 
 """
     Log the user in.
@@ -167,7 +173,9 @@ def unfollow(email):
 def create_playlist(name):
     try:
         CURSOR.execute(create_playlist_SQL, (name, USERNAME))
-    except:
+        CURSOR.commit()
+    except Exception as e:
+        print(e)
         print("error creating playlist")
 
 
@@ -280,6 +288,15 @@ def init():
     global CONNECTION, CURSOR
     CONNECTION = sqlconnect.connect()
     CURSOR = CONNECTION.cursor()
+
+
+# check if playlist belongs to user or not
+def user_playlist_check(playlistid):
+    CURSOR.execute(user_playlistid_check_sql,(USERNAME,))
+
+    if playlistid in CURSOR.fetchall():
+        return True
+    return False
 
 
 if __name__ == "__main__":

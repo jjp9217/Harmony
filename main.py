@@ -65,7 +65,7 @@ def main():
         elif split[0] == "unfollow":
             unfollow(split[1])
 
-        elif split[0]== "create playlist":
+        elif split[0] + " " + split[1] == "create playlist":
             create_playlist(split[1])
 
         elif split[0] == "playlist":
