@@ -22,11 +22,14 @@ login_SQL = "select * from p320_19.\"user\" where username = '%s' and password =
 register_SQL = "insert into p320_19.\"user\" (username, acc_creation_date, password, first_name, last_name, email)" \
       "values (%s, %s, %s, %s, %s, %s);"
 
+create_playlist_SQL = "INSERT INTO p320_19.playlists(playlistid, name, username) Values (%s,%s, %s);"
+
 # TODO
 search_user_SQL = "SELECT * FROM p320_19.dummy;"
 
 user_login_check_sql = "select * from p320_19.\"user\" where username = %s and password = %s;"
 
+global CONNECTION
 
 """
     User action functions -----------------------------------------------------
@@ -89,8 +92,7 @@ def login():
 
 # TODO this just need to exit main
 def logout():
-    global LOGIN
-    LOGIN = False
+    sqlconnect.disconnect(conn)
 
 
 # TODO
@@ -135,10 +137,13 @@ def unfollow(email):
 # TODO Justin
 def create_playlist(name):
     # cannot create playlist with same name
-    playlist_name=["sleep","gym"]
-    if name not in playlist_name:
-        playlist_name+=[name]
-    else:
+    # playlist_name=["sleep","gym"]
+    # if name not in playlist_name:
+    #     playlist_name+=[name]
+    # else:
+    try:
+
+    except:
         print("Playlist name already exists. Choose new name!")
 
 
@@ -204,6 +209,10 @@ def search_user(string):
 # TODO
 def play():
         print("Played")
+
+def init():
+    conn = sqlconnect.connect()
+    curs = conn.cursor()
 
 
 if __name__ == "__main__":

@@ -32,10 +32,7 @@ def help():
     print("--logout")
 
 def main():
-    # First, open a database connection
-    connection = sqlconnect.connect()
-    cursor = connection.cursor()
-
+    init()
     print("-----Welcome to Harmony-----")
     print("Do you want to login or register?")
     signup = input("Enter login to login and register to create a new account with Harmony: ")
@@ -106,7 +103,6 @@ def main():
         else:
             print("Invalid command. Try 'help' to get help!")
 
-    sqlconnect.disconnect(conn)
     exit()
 
 
