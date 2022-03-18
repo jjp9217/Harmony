@@ -30,6 +30,7 @@ search_user_SQL = "SELECT * FROM p320_19.dummy;"
 user_login_check_sql = "select * from p320_19.\"user\" where username = %s and password = %s;"
 
 global CONNECTION
+global CURSOR
 
 """
     User action functions -----------------------------------------------------
@@ -49,8 +50,8 @@ def register():
         unique = False
         while not unique:
 
-                cursor.execute(user_exists_sql, (username,)) #Note that even single arguments must be tuple-wrapped
-                entries = cursor.fetchall()
+                CURSOR.execute(user_exists_sql, (username,)) #Note that even single arguments must be tuple-wrapped
+                entries = CURSOR.fetchall()
                 if len(entries) > 0:
                         print("The username '" + username +"' is taken")
                         username = input("Provide a new username: >")
@@ -67,14 +68,10 @@ def register():
 
 
         # Now try to add this person to the DB.
-        cursor.execute(register_sql, (username, current_date, password,  f_name, l_name, email ))
+        CURSOR.execute(register_sql, (username, current_date, password,  f_name, l_name, email ))
 
         # Make the change
-        connection.commit()
-
-        # Terminate connection
-        sqlconnect.disconnect(connection)
-
+        CONNECTION.commit()
 
 """
     Log the user in.
@@ -92,7 +89,7 @@ def login():
 
 # TODO this just need to exit main
 def logout():
-    sqlconnect.disconnect(conn)
+    sqlconnect.disconnect(CONNECTION)
 
 
 # TODO

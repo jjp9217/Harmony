@@ -100,10 +100,12 @@ def main():
             elif split[1]== "playlists":
                 show_playlists()
 
+        elif split[0] == "logout":
+            logout()
+            break
+
         else:
             print("Invalid command. Try 'help' to get help!")
-
-    exit()
 
 
 if __name__ == "__main__":
