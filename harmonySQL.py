@@ -20,11 +20,13 @@ user_exists_sql = "select * from p320_19.\"user\" where username = '%s'"
 
 def register():
 
-        connection = sqlconnect.connect()  # open a connection to the DB
+        # First, open a database connection
+        connection = sqlconnect.connect()
 
+        # Create a cursor. It allows us to execute SQL commands.
         cursor = connection.cursor()
 
-        # Build the user input
+        ### Build the user input
 
         username = input("provide a new username: >")
 
