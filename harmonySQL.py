@@ -100,7 +100,8 @@ def register():
 
         # Make the change
         CONNECTION.commit()
-        global USERNAME = username
+        global USERNAME
+        USERNAME = username
 
 """
     Log the user in.
@@ -123,6 +124,8 @@ def login():
             print("Username or Password are misspelled, or do not match")
             username = input("Enter username: >")
             password = input("Enter password: >")
+    global USERNAME
+    USERNAME = username
 
 
 # TODO this just need to exit main
