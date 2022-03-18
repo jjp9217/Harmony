@@ -17,7 +17,9 @@ register_sql = "insert into p320_19.\"user\" (username, acc_creation_date, passw
 
 user_exists_sql = "select * from p320_19.\"user\" where username = %s"
 
-login_SQL = "select * from p320_19.\"user\" where username = '%s' and password = '%s';"
+email_exists_sql = "select * from p320_19.\"user\" where email = %s"
+
+login_SQL = "select * from p320_19.\"user\" where username = %s and password = %s;"
 
 register_SQL = "insert into p320_19.\"user\" (username, acc_creation_date, password, first_name, last_name, email)" \
       "values (%s, %s, %s, %s, %s, %s);"
@@ -35,8 +37,12 @@ show_playlists_sql="select name FROM playlist where username = '%s'"
 
 add_song_playlist_SQL=""
 
-global CONNECTION
-global CURSOR
+"""
+    Global Variables
+"""
+CONNECTION = sqlconnect.connect()
+CURSOR = CONNECTION.cursor()
+
 global USERNAME
 global LOGIN
 
@@ -54,8 +60,7 @@ def register():
         username = input("Provide a new username: >")
 
         #Make sure the username is unique -- it is the key for the "users" table
-        unique = False
-        while not unique:
+        while True:
 
                 CURSOR.execute(user_exists_sql, (username,)) #Note that even single arguments must be tuple-wrapped
                 entries = CURSOR.fetchall()
@@ -64,15 +69,26 @@ def register():
                         username = input("Provide a new username: >")
                         continue
                 else:
-                        unique = True
-
+                        break
 
         password = input("Provide a new password: >")
-        email = input("Provide an email address: >")
         f_name = input("First name: >")
         l_name = input("Last name: >")
         current_date = str(datetime.date.today()) #cast date to yyyy-mm-dd string
 
+        email = input("Provide an email address: >")
+
+        # Make sure the email is unique -- which is part of project requirements
+        while True:
+
+            CURSOR.execute(email_exists_sql, (email,))  # Note that even single arguments must be tuple-wrapped
+            entries = CURSOR.fetchall()
+            if len(entries) > 0:
+                print("The username '" + email + "' is already in use with an account")
+                email = input("Provide a different email: >")
+                continue
+            else:
+                break
 
         # Now try to add this person to the DB.
         CURSOR.execute(register_sql, (username, current_date, password,  f_name, l_name, email ))
