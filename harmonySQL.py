@@ -22,7 +22,7 @@ login_SQL = "select * from p320_19.\"user\" where username = '%s' and password =
 register_SQL = "insert into p320_19.\"user\" (username, acc_creation_date, password, first_name, last_name, email)" \
       "values (%s, %s, %s, %s, %s, %s);"
 
-create_playlist_SQL = "INSERT INTO p320_19.playlists(playlistid, name, username) Values (%s,%s, %s);"
+create_playlist_SQL = "INSERT INTO p320_19.playlists(name, username) Values (%s, %s);"
 
 # TODO
 search_user_SQL = "SELECT * FROM p320_19.dummy;"
@@ -31,7 +31,9 @@ user_login_check_sql = "select * from p320_19.\"user\" where username = %s and p
 
 show_friends_sql="select following_username FROM following where follower_username = '%s'";
 
-show_playlists_sql="select name FROM playlist where username = '%s'";
+show_playlists_sql="select name FROM playlist where username = '%s'"
+
+add_song_playlist_SQL=""
 
 global CONNECTION
 global CURSOR
@@ -147,24 +149,22 @@ def unfollow(email):
 
 # TODO Justin
 def create_playlist(name):
-    # cannot create playlist with same name
-    # playlist_name=["sleep","gym"]
-    # if name not in playlist_name:
-    #     playlist_name+=[name]
-    # else:
     try:
-        print("todo")
+        CURSOR.execute(create_playlist_SQL, (name, USERNAME))
     except:
-        print("Playlist name already exists. Choose new name!")
+        print("error creating playlist")
 
 
 # TODO Justin
-def add_playlist_song(name, songid):
-    # check if playlist has songid
-    if(1):
-        print("Song " +songid+  " added to "+ name)
-    else:
-        print("Song already exists")
+def add_playlist_song(playlist, songid):
+    # if 1:
+    #     print("Song " +songid+  " added to "+ name)
+    # else:
+    #     print("Song already exists")
+    try:
+        CURSOR.execute(create_playlist_SQL, (playlist, songid))
+    except:
+        print("error adding song")
 
 
 # TODO
@@ -259,9 +259,11 @@ def search_user(string):
 def play():
         print("Played")
 
+
 def init():
-    conn = sqlconnect.connect()
-    curs = conn.cursor()
+    global CONNECTION, CURSOR
+    CONNECTION = sqlconnect.connect()
+    CURSOR = CONNECTION.cursor()
 
 
 if __name__ == "__main__":
