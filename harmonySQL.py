@@ -16,8 +16,12 @@ register_sql = "insert into p320_19.\"user\" (username, acc_creation_date, passw
 
 user_exists_sql = "select * from p320_19.\"user\" where username = '%s'"
 
+user_login_check_sql = "select * from p320_19.\"user\" where username = '%s' and password = '%s';"
 
 
+"""
+    User action functions
+"""
 def register():
 
         # First, open a database connection
@@ -30,7 +34,15 @@ def register():
 
         username = input("provide a new username: >")
 
-        #TODO Select the DB to find if this username is taken
+        #Make sure the username is unique -- it is the key for the "users" table
+        unique = False
+        while not unique:
+
+                cursor.execute(user_exists_sql, username)
+                cursor.commit()
+                flag = True
+
+
 
         password = input("provide a new password: >")
         email = input("provide an email address: >")
