@@ -35,9 +35,15 @@ def main():
     init()
     print("-----Welcome to Harmony-----")
     print("Do you want to login or register?")
-    signup = input("Enter login to login and register to create a new account with Harmony: ")
-    if signup == "register":
-        register()
+    LOGIN = False
+    while not LOGIN:
+        signup = input("Enter login to login and register to create a new account with Harmony: ")
+        if signup.lower() == "register":
+            register()
+            LOGIN = True
+        elif signup.lower() == "login":
+            login()
+            LOGIN = True
 
     # Print the usage metssage
     help()
