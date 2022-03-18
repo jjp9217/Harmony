@@ -7,24 +7,17 @@ Note that the actions here are ONLY for user interactions.
 Any developer tools should use a different file.
 """
 import datetime
-
 import sqlconnect
 
 """
-    Constants
+    Constants -----------------------------------------------------------------
 """
 register_sql = "insert into p320_19.\"user\" (username, acc_creation_date, password, first_name, last_name, email)" \
       "values (%s, %s, %s, %s, %s, %s);"
 
-user_exists_sql = "select * from p320_19.\"user\" where username = '%s'"
+user_exists_sql = "select * from p320_19.\"user\" where username = %s"
 
 login_SQL = "select * from p320_19.\"user\" where username = '%s' and password = '%s';"
-
-
-
-# insert into p320_19."user" (username, acc_creation_date, password, first_name, last_name, email)
-# values ('test', '2022-03-17', 'pass', 'catherine', 'katherine', 'null@gmail.com');
-import sqlconnect
 
 register_SQL = "insert into p320_19.\"user\" (username, acc_creation_date, password, first_name, last_name, email)" \
       "values (%s, %s, %s, %s, %s, %s);"
@@ -32,19 +25,18 @@ register_SQL = "insert into p320_19.\"user\" (username, acc_creation_date, passw
 # TODO
 search_user_SQL = "SELECT * FROM p320_19.dummy;"
 
-user_login_check_sql = "select * from p320_19.\"user\" where username = '%s' and password = '%s';"
+user_login_check_sql = "select * from p320_19.\"user\" where username = %s and password = %s;"
 
 
 """
-    User action functions
+    User action functions -----------------------------------------------------
+"""
+
+"""
+    User registration function.
+    Creates a new user and adds it to the DB. Does check if name is taken to prevent crashing.
 """
 def register():
-
-        # First, open a database connection
-        connection = sqlconnect.connect()
-
-        # Create a cursor. It allows us to execute SQL commands.
-        cursor = connection.cursor()
 
         ### Build the user input
 
@@ -54,11 +46,11 @@ def register():
         unique = False
         while not unique:
 
-                cursor.execute(user_exists_sql, username)
+                cursor.execute(user_exists_sql, (username,)) #Note that even single arguments must be tuple-wrapped
                 entries = cursor.fetchall()
                 if len(entries) > 0:
                         print("The username '" + username +"' is taken")
-                        username = input("provide a new username: >")
+                        username = input("Provide a new username: >")
                         continue
                 else:
                         unique = True
@@ -81,7 +73,10 @@ def register():
         sqlconnect.disconnect(connection)
 
 
-# TODO
+"""
+    Log the user in.
+    Check if the supplied username/password combo exists in the DB.
+"""
 def login():
     global LOGIN
     username = input("Enter username: ")
