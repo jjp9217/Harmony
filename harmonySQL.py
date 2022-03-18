@@ -49,7 +49,6 @@ global LOGIN
 def register():
 
         ### Build the user input
-
         username = input("Provide a new username: >")
 
         #Make sure the username is unique -- it is the key for the "users" table
@@ -84,14 +83,22 @@ def register():
     Check if the supplied username/password combo exists in the DB.
 """
 def login():
-    #use USERNAME to store current logged in user's username
-    global LOGIN, USERNAME
-    username = input("Enter username: ")
-    password = input("Enter password: ")
-    if(username == "ishanshah" and password =="123"):
-        LOGIN = True
-    else:
-        print("Username or password is wrong. Try again!")
+
+    username = input("Enter username: >")
+    password = input("Enter password: >")
+
+    while True:
+        CURSOR.execute(login_SQL, (username, password))
+        entries = CURSOR.fetchall()
+        if len(entries) > 0:
+            print("Logged in as user '" + username + "'")
+            print("////// Welcome to Harmony \\\\\\\\\\")
+            break
+
+        else:
+            print("Username or Password are misspelled, or do not match")
+            username = input("Enter username: >")
+            password = input("Enter password: >")
 
 
 # TODO this just need to exit main
