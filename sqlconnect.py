@@ -17,7 +17,7 @@ def connect():
     try:
         server = SSHTunnelForwarder((server_name, 22), ssh_username=username, ssh_password=password, remote_bind_address=('localhost', 5432))
         server.start()
-        print("SSH tunnel established")
+        # print("SSH tunnel established")
         params = {
             'database': db_name,
             'user': username,
@@ -27,12 +27,12 @@ def connect():
         }
 
         conn = psycopg2.connect(**params)
-        print("Connected to Database")
+        # print("Connected to Database")
         return conn
     except:
         print("Connection failed")
 
 
 def disconnect(conn):
-    print("Database disconnected")
+    # print("Database disconnected")
     conn.close()

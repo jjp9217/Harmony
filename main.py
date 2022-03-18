@@ -32,9 +32,7 @@ def help():
     print("--logout")
 
 def main():
-    conn = sqlconnect.connect()
-    curs = conn.cursor()
-
+    init()
     print("-----Welcome to Harmony-----")
     print("Do you want to login or register?")
     signup = input("Enter login to login and register to create a new account with Harmony: ")
@@ -53,6 +51,7 @@ def main():
             help()
         elif(command == "logout"):
             logout()
+            break
         elif(split[0] == "follow"):
             follow(split[1])
         elif(split[0] == "unfollow"):
@@ -88,7 +87,7 @@ def main():
                 show_playlists()
         else:
             print("Invalid command. Try 'help' to get help!")
-    sqlconnect.disconnect(conn)
+
     exit()
 
 
