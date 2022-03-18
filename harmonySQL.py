@@ -131,7 +131,7 @@ def unfollow(email):
         print("Wrong email. Please enter correct email!")
 
 
-# TODO
+# TODO Justin
 def create_playlist(name):
     # cannot create playlist with same name
     playlist_name=["sleep","gym"]
@@ -141,8 +141,8 @@ def create_playlist(name):
         print("Playlist name already exists. Choose new name!")
 
 
-# TODO
-def add_playlist_song(name,songid):
+# TODO Justin
+def add_playlist_song(name, songid):
     # check if playlist has songid
     if(1):
         print("Song " +songid+  " added to "+ name)
@@ -177,7 +177,7 @@ def delete_playlist_album(name,albumid):
         print("Album doesnot exist")
 
 
-# TODO
+# TODO Justin
 def change_playlist_name(ogname,newname):
     print("Changed from "+ ogname+ " to " + newname)
 
