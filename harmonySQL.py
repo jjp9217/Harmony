@@ -142,7 +142,7 @@ def create_playlist(name):
     #     playlist_name+=[name]
     # else:
     try:
-
+        print("todo")
     except:
         print("Playlist name already exists. Choose new name!")
 
