@@ -32,6 +32,7 @@ def help():
     print("--logout")
 
 def main():
+
     init()
     print("-----Welcome to Harmony-----")
     print("Do you want to login or register?")
