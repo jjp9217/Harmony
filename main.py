@@ -5,6 +5,7 @@ file name: main.py
 Dependencies: psycopg2, sshtunnel
 """
 import sqlconnect
+from harmonySQL import *
 
 def help():
     print("\n")
@@ -90,4 +91,8 @@ def main():
     sqlconnect.disconnect(conn)
     exit()
 
-main()
+
+if __name__ == "__main__":
+    main()
+
+
