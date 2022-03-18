@@ -29,8 +29,14 @@ search_user_SQL = "SELECT * FROM p320_19.dummy;"
 
 user_login_check_sql = "select * from p320_19.\"user\" where username = %s and password = %s;"
 
+show_friends_sql="select following_username FROM following where follower_username = '%s'";
+
+show_playlists_sql="select name FROM playlist where username = '%s'";
+
 global CONNECTION
 global CURSOR
+global USERNAME
+global LOGIN
 
 """
     User action functions -----------------------------------------------------
@@ -78,7 +84,8 @@ def register():
     Check if the supplied username/password combo exists in the DB.
 """
 def login():
-    global LOGIN
+    #use USERNAME to store current logged in user's username
+    global LOGIN, USERNAME
     username = input("Enter username: ")
     password = input("Enter password: ")
     if(username == "ishanshah" and password =="123"):
@@ -185,14 +192,52 @@ def change_playlist_name(ogname,newname):
     print("Changed from "+ ogname+ " to " + newname)
 
 
-# TODO
 def show_friends():
-    print("You have x friends. They are: ")
+    # First, open a database connection
+    connection = sqlconnect.connect()
+
+    # Create a cursor. It allows us to execute SQL commands.
+    cursor = connection.cursor()
+
+    # Now try to add this person to the DB.
+    cursor.execute(show_friends_sql,(USERNAME,))
+
+    # print friends
+    print("Your friends are: ")
+    while row is not None:
+        print(row)
+        row = cursor.fetchone()
+
+    # Make the change
+    connection.commit()
+
+    # Terminate connection
+    sqlconnect.disconnect(connection)
 
 
-# TODO
 def show_playlists():
-    print("You have x playlists. They are: ")
+
+    # First, open a database connection
+    connection = sqlconnect.connect()
+
+    # Create a cursor. It allows us to execute SQL commands.
+    cursor = connection.cursor()
+
+    # Now try to add this person to the DB.
+    cursor.execute(show_playlists_sql,(USERNAME,))
+
+    # print playlists
+    print("Your playlists are: ")
+    while row is not None:
+        print(row)
+        row = cursor.fetchone()
+
+    # Make the change
+    connection.commit()
+
+    # Terminate connection
+    sqlconnect.disconnect(connection)
+
 
 
 # TODO
