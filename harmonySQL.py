@@ -254,6 +254,7 @@ def play():
 
 
 def init():
+    global CONNECTION, CURSOR
     CONNECTION = sqlconnect.connect()
     CURSOR = CONNECTION.cursor()
 
