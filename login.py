@@ -1,0 +1,1 @@
+SQL = "select * from p320_19.\"user\" where username = '%s' and password = '%s';"

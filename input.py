@@ -103,6 +103,7 @@ def input_songs():
         if i > 1000:
             break
 
+
     sqlconnect.disconnect(conn)
     dates.close()
     songs.close()
@@ -131,11 +132,13 @@ def input_genre():
 
 def input_song_artist():
     file = open("MOCK_DATA_artist_song.csv", newline='')
+
     file.readline()
     parser = csv.reader(file)
     conn = sqlconnect.connect()
     cur = conn.cursor()
     i = 1
+
     cur.execute("DELETE FROM p320_19.artist_song_production;")
     conn.commit()
     for line in parser:
@@ -183,6 +186,7 @@ def input_song_album():
     file.close()
 
 
+
 def input_album_genre():
     file = open("MOCK_DATA_album_genres.csv", newline='')
     file.readline()
@@ -227,6 +231,7 @@ if __name__ == "__main__":
     # input_album_genre()
     input_song_album()
     # input_artists()
+
     # input_songs()
     # input_artists()
     # input_albums()
