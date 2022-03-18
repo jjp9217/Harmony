@@ -13,7 +13,7 @@ def help():
     print("--help")
     print("--play song 'songid")
     print("--play album 'albumid'")
-    print("--play playlist 'playlistname'")
+    print("--play playlist 'playlist-name'")
     print("--follow 'email'")
     print("--unfollow 'email'")
     print("--create playlist 'name'")
@@ -21,7 +21,7 @@ def help():
     print("--playlist 'name' add album 'albumid")
     print("--playlist 'name' delete song 'songid")
     print("--playlist 'name' delete album 'albumid")
-    print("--playlist 'name' change name 'new name")
+    print("--playlist 'name' change-name 'new name")
     print("--search user 'string'")
     print("--search songname 'song name'")
     print("--search artist 'song artist'")
@@ -39,7 +39,7 @@ def main():
     print("-----Welcome to Harmony-----")
     print("Do you want to login or register?")
     signup = input("Enter login to login and register to create a new account with Harmony: ")
-    if(signup == "register"):
+    if signup == "register":
         register()
 
     # Print the usage metssage
@@ -49,19 +49,19 @@ def main():
         command = input("\nEnter command: ")
         split = command.split(" ")
 
-        if(command == "help" ):
+        if command == "help":
             help()
 
-        elif(command == "logout"):
+        elif command == "logout":
             logout()
 
-        elif(split[0] == "follow"):
+        elif split[0] == "follow":
             follow(split[1])
 
-        elif(split[0] == "unfollow"):
+        elif split[0] == "unfollow":
             unfollow(split[1])
 
-        elif(split[0]=="create playlist"):
+        elif split[0]== "create playlist":
             create_playlist(split[1])
 
         elif split[0] == "playlist":
@@ -76,35 +76,36 @@ def main():
             elif split[2]== "delete":
                 if split[3]== "album":
                     delete_playlist_album(split[1],split[4])
-
                 elif split[3] == "song":
                     delete_playlist_song(split[1],split[4])
 
-        elif(split[0]=="search"):
+            elif split[2] == "change-name":
+                change_playlist_name(split[1], split[4])
+
+        elif split[0]== "search":
             #search with sorted value
-            if(split[1]=="artist"):
+            if split[1]== "artist":
                 search_artist(split[2])
-            elif(split[1]=="album"):
+            elif split[1]== "album":
                 search_album(split[2])
-            elif(split[1]=="songname"):
+            elif split[1]== "songname":
                 search_name(split[2])
-            elif(split[1]=="genre"):
+            elif split[1]== "genre":
                 search_genre(split[2])
-            elif(split[1]=="user"):
+            elif split[1]== "user":
                 search_user(split[2])
 
-        elif(split[0]=="playlist" and split[2]=="change" and split[3]=="name"):
-            change_playlist_name(split[1],split[4])
+        elif split[0]== "show":
 
-        elif(split[0]=="show"):
-
-            if(split[1]=="friends"):
+            if split[1]== "friends":
                 show_friends()
-            elif(split[1]=="playlists"):
+
+            elif split[1]== "playlists":
                 show_playlists()
 
         else:
             print("Invalid command. Try 'help' to get help!")
+
     sqlconnect.disconnect(conn)
     exit()
 
