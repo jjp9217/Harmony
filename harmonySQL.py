@@ -18,6 +18,20 @@ register_sql = "insert into p320_19.\"user\" (username, acc_creation_date, passw
 
 user_exists_sql = "select * from p320_19.\"user\" where username = '%s'"
 
+login_SQL = "select * from p320_19.\"user\" where username = '%s' and password = '%s';"
+
+
+
+# insert into p320_19."user" (username, acc_creation_date, password, first_name, last_name, email)
+# values ('test', '2022-03-17', 'pass', 'catherine', 'katherine', 'null@gmail.com');
+import sqlconnect
+
+register_SQL = "insert into p320_19.\"user\" (username, acc_creation_date, password, first_name, last_name, email)" \
+      "values (%s, %s, %s, %s, %s, %s);"
+
+# TODO
+search_user_SQL = "SELECT * FROM p320_19.dummy;"
+
 user_login_check_sql = "select * from p320_19.\"user\" where username = '%s' and password = '%s';"
 
 
@@ -67,7 +81,7 @@ def register():
         sqlconnect.disconnect(connection)
 
 
-
+# TODO
 def login():
     global LOGIN
     username = input("Enter username: ")
@@ -76,24 +90,35 @@ def login():
         LOGIN = True
     else:
         print("Username or password is wrong. Try again!")
-    
+
+
+# TODO this just need to exit main
 def logout():
     global LOGIN
     LOGIN = False
 
 
+# TODO
 def search_name(songname):
     print(songname)
 
+
+# TODO
 def search_album(album):
     print(album)
 
+
+# TODO
 def search_genre(genre):
     print(genre)
 
+
+# TODO
 def search_artist(artist):
     print(artist)
 
+
+# TODO
 def follow(email):
     ids = ['abc','xyz','mno']
     if email in ids:
@@ -101,6 +126,8 @@ def follow(email):
     else:
         print("Wrong email. Please enter correct email!")
 
+
+# TODO
 def unfollow(email):
     # need to check if user follows the username
     ids = ['abc','xyz','mno']
@@ -110,6 +137,7 @@ def unfollow(email):
         print("Wrong email. Please enter correct email!")
 
 
+# TODO
 def create_playlist(name):
     # cannot create playlist with same name
     playlist_name=["sleep","gym"]
@@ -118,6 +146,8 @@ def create_playlist(name):
     else:
         print("Playlist name already exists. Choose new name!")
 
+
+# TODO
 def add_playlist_song(name,songid):
     # check if playlist has songid
     if(1):
@@ -126,6 +156,7 @@ def add_playlist_song(name,songid):
         print("Song already exists")
 
 
+# TODO
 def delete_playlist_song(name,songid):
     # check if playlist has songid
     if(1):
@@ -134,6 +165,7 @@ def delete_playlist_song(name,songid):
         print("Song doesnot exist")
 
 
+# TODO
 def add_playlist_album(name,albumid):
     # check if playlist has albumid
     if(1):
@@ -142,6 +174,7 @@ def add_playlist_album(name,albumid):
         print("Album already exists")
 
 
+# TODO
 def delete_playlist_album(name,albumid):
     # check if playlist has albumid
     if(1):
@@ -149,22 +182,31 @@ def delete_playlist_album(name,albumid):
     else:
         print("Album doesnot exist")
 
+
+# TODO
 def change_playlist_name(ogname,newname):
     print("Changed from "+ ogname+ " to " + newname)
 
+
+# TODO
 def show_friends():
     print("You have x friends. They are: ")
 
+
+# TODO
 def show_playlists():
     print("You have x playlists. They are: ")
 
 
+# TODO
 def search_user(string):
     user=["xyz","mno","is4761","ishan"]
     for u in user:
         if u[:len(string)]==string:
             print("Found " +u)
 
+
+# TODO
 def play():
         print("Played")
 
