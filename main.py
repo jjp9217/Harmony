@@ -13,7 +13,6 @@ def help():
     print("Commands to run:")
     print("--help")
     print("--play song 'songid")
-    print("--play album 'albumid'")
     print("--play playlist 'playlist-name'")
     print("--follow 'email'")
     print("--unfollow 'email'")
@@ -108,6 +107,12 @@ def main():
 
             elif split[1]== "playlists":
                 show_playlists()
+
+        elif split[0] == "play":
+            if split[1] == "song":
+                play_song(split[2])
+            elif split[1] == "playlist":
+                play_playlist(split[2])
 
         elif split[0] == "logout":
             logout()

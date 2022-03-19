@@ -31,9 +31,9 @@ search_user_SQL = "SELECT * FROM p320_19.dummy;"
 
 user_login_check_sql = "select * from p320_19.\"user\" where username = %s and password = %s;"
 
-show_friends_sql="select following_username FROM following where follower_username = '%s'";
+show_friends_sql="select following_username FROM p320_19.following where follower_username = %s";
 
-show_playlists_sql="select name FROM p320_19.playlist where username = '%s'"
+show_playlists_sql="select name FROM p320_19.playlists where username = %s"
 
 add_song_playlist_SQL="INSERT INTO p320_19.collection_songs(playlistid, songid) Values (%s,%s);"
 
@@ -41,6 +41,8 @@ add_song_playlist_SQL="INSERT INTO p320_19.collection_songs(playlistid, songid) 
 user_playlistid_check_sql="select playlistid FROM p320_19.playlists where username = %s"
 
 change_playlist_name_SQL = "Update p320_19.playlists SET name=%s WHERE playlistid=%s"
+
+play_song_SQL = "INSERT INTO p320_19.listens(songid, username, datetime) VALUES (%s, %s, %s)"
 
 
 
@@ -234,14 +236,16 @@ def change_playlist_name(playlistid, newname):
     if user_playlist_check(playlistid):
         try:
             CURSOR.execute(change_playlist_name_SQL, (newname, playlistid))
-            CONNECTION.commit()
             print(f"Changed playlist id:{playlistid} name to {newname}")
         except Exception as e:
             print(e)
+        finally:
+            CONNECTION.commit()
     else:
         print(f"You do not own a playlist with id:{playlistid}")
 
 
+# TODO this is broken
 def show_friends():
     # First, open a database connection
     connection = sqlconnect.connect()
@@ -265,6 +269,7 @@ def show_friends():
     sqlconnect.disconnect(connection)
 
 
+# TODO this is broken
 def show_playlists():
 
     # First, open a database connection
@@ -298,9 +303,23 @@ def search_user(string):
             print("Found " +u)
 
 
-# TODO
+# works for now but user can't play same song twice on same day because databse uses date as primary key.
+# will fix when database is updated
 def play_song(songid):
-        print("Played")
+    CURSOR.execute(f"SELECT name from p320_19.songs WHERE songid={songid}")
+    song_name = CURSOR.fetchone()
+    if song_name is None:
+        print(f"song id:{songid} does not exist")
+        return
+    try:
+        current_date = str(datetime.date.today())
+        CURSOR.execute(play_song_SQL, (songid, USERNAME, current_date))
+        print(f"playing {song_name[0]}........")
+    except Exception as e:
+        print(e)
+    finally:
+        CONNECTION.commit()
+
 
 # TODO
 def play_playlist(playlistid):
