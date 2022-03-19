@@ -44,6 +44,11 @@ change_playlist_name_SQL = "Update p320_19.playlists SET name=%s WHERE playlisti
 
 play_song_SQL = "INSERT INTO p320_19.listens(songid, username, datetime) VALUES (%s, %s, %s)"
 
+select_songs_in_playlist = "SELECT songid from p320_19.collection_songs WHERE playlistid=%s;"
+
+select_albums_in_playlist = "SELECT \"albumID\" from p320_19.collection_albums WHERE playlistid=%s;"
+
+
 
 
 """
@@ -303,6 +308,7 @@ def search_user(string):
             print("Found " +u)
 
 
+# "finished" Justin
 # works for now but user can't play same song twice on same day because databse uses date as primary key.
 # will fix when database is updated
 def play_song(songid):
@@ -321,9 +327,28 @@ def play_song(songid):
         CONNECTION.commit()
 
 
-# TODO
+# TODO Justin
 def play_playlist(playlistid):
-        print("Played")
+    CURSOR.execute(f"SELECT name from p320_19.playlists WHERE playlistid={playlistid}")
+    playlist_name = CURSOR.fetchone()
+    if playlist_name is None:
+        print(f"playlist id:{playlistid} does not exist")
+        return
+    CURSOR.execute(select_songs_in_playlist, (playlistid,))
+    song_ids = CURSOR.fetchall()
+    CURSOR.execute(select_albums_in_playlist, (playlistid,))
+    album_ids = CURSOR.fetchall()
+    if not song_ids and not album_ids:
+        print(f"playlist {playlist_name[0]} has no songs or albums")
+        return
+    for song in song_ids:
+        play_song(song[0])
+    for album in album_ids:
+        CURSOR.execute(f"SELECT songid from p320_19.collected_songs WHERE albumid={album[0]};")
+        songs = CURSOR.fetchall()
+        for song in songs:
+            play_song(song[0])
+
 
 
 def init():
