@@ -40,6 +40,8 @@ add_song_playlist_SQL="INSERT INTO p320_19.collection_songs(playlistid, songid) 
 #check if playlist belongs to user
 user_playlistid_check_sql="select playlistid FROM p320_19.playlists where username = %s"
 
+change_playlist_name_SQL = "Update p320_19.playlists SET name=%s WHERE playlistid=%s"
+
 
 
 """
@@ -128,7 +130,7 @@ def login():
     USERNAME = username
 
 
-# TODO this just need to exit main
+# finished Justin
 def logout():
     sqlconnect.disconnect(CONNECTION)
     print("logged out\nGOODBYE")
@@ -227,9 +229,17 @@ def delete_playlist_album(name,albumid):
         print("Album doesnot exist")
 
 
-# TODO Justin
-def change_playlist_name(ogname,newname):
-    print("Changed from "+ ogname+ " to " + newname)
+# finished Justin
+def change_playlist_name(playlistid, newname):
+    if user_playlist_check(playlistid):
+        try:
+            CURSOR.execute(change_playlist_name_SQL, (newname, playlistid))
+            CONNECTION.commit()
+            print(f"Changed playlist id:{playlistid} name to {newname}")
+        except Exception as e:
+            print(e)
+    else:
+        print(f"You do not own a playlist with id:{playlistid}")
 
 
 def show_friends():
@@ -289,7 +299,11 @@ def search_user(string):
 
 
 # TODO
-def play():
+def play_song(songid):
+        print("Played")
+
+# TODO
+def play_playlist(playlistid):
         print("Played")
 
 
