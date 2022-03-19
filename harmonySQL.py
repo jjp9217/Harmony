@@ -33,12 +33,12 @@ user_login_check_sql = "select * from p320_19.\"user\" where username = %s and p
 
 show_friends_sql="select following_username FROM following where follower_username = '%s'";
 
-show_playlists_sql="select name FROM playlist where username = '%s'"
+show_playlists_sql="select name FROM p320_19.playlist where username = '%s'"
 
-add_song_playlist_SQL=""
+add_song_playlist_SQL="INSERT INTO p320_19.collection_songs(playlistid, songid) Values (%s,%s);"
 
 #check if playlist belongs to user
-user_playlistid_check_sql="select playlistid FROM playlists where username = '%s'"
+user_playlistid_check_sql="select playlistid FROM p320_19.playlists where username = %s"
 
 
 
@@ -173,26 +173,31 @@ def unfollow(email):
         print("Wrong email. Please enter correct email!")
 
 
-# TODO Justin
+# finished Justin
 def create_playlist(name):
     try:
         CURSOR.execute(create_playlist_SQL, (name, USERNAME))
-        CURSOR.commit()
+        print(f"playlist {name} created")
     except Exception as e:
-        print(e)
         print("error creating playlist")
+    finally:
+        CONNECTION.commit()
 
 
-# TODO Justin
+# finished Justin
 def add_playlist_song(playlist, songid):
-    # if 1:
-    #     print("Song " +songid+  " added to "+ name)
-    # else:
-    #     print("Song already exists")
-    try:
-        CURSOR.execute(create_playlist_SQL, (playlist, songid))
-    except:
-        print("error adding song")
+    if user_playlist_check(playlist):
+        try:
+            CURSOR.execute(add_song_playlist_SQL, (playlist, songid))
+            CONNECTION.commit()
+            print(f"song id:{songid} added to playlist id:{playlist}")
+        except:
+            print(f"song id:{songid} already in playlist id:{playlist}")
+        finally:
+            CONNECTION.commit()
+    else:
+        print(f"You do not own a playlist with id:{playlist}")
+
 
 
 # TODO
@@ -296,11 +301,16 @@ def init():
 
 # check if playlist belongs to user or not
 def user_playlist_check(playlistid):
-    CURSOR.execute(user_playlistid_check_sql,(USERNAME,))
-
-    if playlistid in CURSOR.fetchall():
-        return True
-    return False
+    try:
+        CURSOR.execute(user_playlistid_check_sql,(USERNAME,))
+        results = CURSOR.fetchall()
+        for id in results:
+            if str(id[0]) == str(playlistid):
+                return True
+        return False
+    except Exception as e:
+        print(e)
+        return False
 
 
 if __name__ == "__main__":

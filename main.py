@@ -18,11 +18,11 @@ def help():
     print("--follow 'email'")
     print("--unfollow 'email'")
     print("--create playlist 'name'")
-    print("--playlist 'name' add song 'songid")
-    print("--playlist 'name' add album 'albumid")
-    print("--playlist 'name' delete song 'songid")
-    print("--playlist 'name' delete album 'albumid")
-    print("--playlist 'name' change-name 'new name")
+    print("--playlist 'id' add song 'songid")
+    print("--playlist 'id' add album 'albumid")
+    print("--playlist 'id' delete song 'songid")
+    print("--playlist 'id' delete album 'albumid")
+    print("--playlist 'id' change-name 'new name")
     print("--search user 'string'")
     print("--search songname 'song name'")
     print("--search artist 'song artist'")
@@ -68,7 +68,7 @@ def main():
             unfollow(split[1])
 
         elif split[0] + " " + split[1] == "create playlist":
-            create_playlist(split[1])
+            create_playlist(split[2])
 
         elif split[0] == "playlist":
 
