@@ -7,6 +7,7 @@ Dependencies: psycopg2, sshtunnel
 import sqlconnect
 from harmonySQL import *
 
+
 def help():
     print("\n")
     print("Commands to run:")
@@ -49,7 +50,7 @@ def main():
     # Print the usage metssage
     help()
 
-    while True:
+    while LOGIN:
         command = input("\nEnter command: ")
         split = command.split(" ")
 
@@ -58,6 +59,7 @@ def main():
 
         elif command == "logout":
             logout()
+            LOGIN = False
 
         elif split[0] == "follow":
             follow(split[1])
@@ -109,7 +111,7 @@ def main():
 
         elif split[0] == "logout":
             logout()
-            break
+            LOGIN = False
 
         else:
             print("Invalid command. Try 'help' to get help!")

@@ -49,7 +49,7 @@ CONNECTION = sqlconnect.connect()
 CURSOR = CONNECTION.cursor()
 
 global USERNAME
-global LOGIN
+
 
 """
     User action functions -----------------------------------------------------
@@ -131,6 +131,7 @@ def login():
 # TODO this just need to exit main
 def logout():
     sqlconnect.disconnect(CONNECTION)
+    print("logged out\nGOODBYE")
 
 
 # TODO
