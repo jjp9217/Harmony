@@ -192,28 +192,31 @@ def logout():
 # descending)
 def search_name(songname):
     try:
-        CURSOR.execute("SELECT * FROM p320_19.songs WHERE name=%s",
-                       songname)
-
+        CURSOR.execute("SELECT * FROM p320_19.songs WHERE name LIKE '%",
+                       songname, "%';")
         rows = CURSOR.fetchall()
 
         for row in rows:
             print("Song: ", row[2], "Release Date: ", row[1], "Duration: ",
                   row[3])
-            CURSOR.execute("SELECT * FROM p320_19.albums WHERE albumid=%s",
-                           (row[0]))
+            CURSOR.execute("SELECT * FROM p320_19.songs RIGHT JOIN "
+                           "p320_19.albums ON p320_19.songs.songsid "
+                           "= p320_19.albums.albumid;")
+
             rows1 = CURSOR.fetchall()
             for r in rows1:
                 print("Album: ", r[2], "Release Date: ", r[1])
 
-            CURSOR.execute("SELECT * FROM p320_19.artists WHERE "
-                           "artistid=%s", (row[0]))
+            CURSOR.execute("SELECT * FROM p320_19.songs RIGHT JOIN "
+                           "p320_19.artists ON p320_19.songs.songsid = "
+                           "p320_19.artists.artistid;")
             rows1 = CURSOR.fetchall()
             for r in rows1:
                 print("Artist: ", r[1])
 
-            CURSOR.execute("SELECT * FROM p320_19.genre WHERE genreid=%s",
-                           (row[0]))
+            CURSOR.execute("SELECT * FROM p320_19.songs RIGHT JOIN "
+                           "p320_19.genres ON p320_19.songs.songsid = "
+                           "p320_19.genres.genreid;")
             rows1 = CURSOR.fetchall()
             for r in rows1:
                 print("Genre: ", r[1])
@@ -226,27 +229,29 @@ def search_name(songname):
 # TODO Satvik
 def search_album(album):
     try:
-        CURSOR.execute("SELECT * FROM p320_19.albums WHERE name=%s",
-                       album)
-
+        CURSOR.execute("SELECT * FROM p320_19.songs WHERE name LIKE '%",
+                       album, "%';")
         rows = CURSOR.fetchall()
 
         for row in rows:
             print("Album: ", row[2], "Release Date: ", row[1])
-            CURSOR.execute("SELECT * FROM p320_19.artists WHERE "
-                           "artistid=%s", (row[0]))
+            CURSOR.execute("SELECT * FROM p320_19.albums RIGHT JOIN "
+                           "p320_19.artists ON p320_19.albums.albumid "
+                           "= p320_19.artists.artistid;")
             rows1 = CURSOR.fetchall()
             for r in rows1:
                 print("Artist: ", r[1])
 
-            CURSOR.execute("SELECT * FROM p320_19.genre WHERE genreid=%s",
-                           (row[0]))
+            CURSOR.execute("SELECT * FROM p320_19.albums RIGHT JOIN "
+                           "p320_19.genres ON p320_19.albums.albumid "
+                           "= p320_19.genres.genreid;")
             rows1 = CURSOR.fetchall()
             for r in rows1:
                 print("Genre: ", r[1])
 
-            CURSOR.execute("SELECT * FROM p320_19.songs WHERE songid=%s",
-                           (row[0]))
+            CURSOR.execute("SELECT * FROM p320_19.albums RIGHT JOIN "
+                           "p320_19.songs ON p320_19.albums.albumid "
+                           "= p320_19.songs.songid;")
             rows1 = CURSOR.fetchall()
             for r in rows1:
                 print("Song: ", row[2], "Release Date: ", row[1],
@@ -260,26 +265,30 @@ def search_album(album):
 # TODO Satvik
 def search_genre(genre):
     try:
-        CURSOR.execute("SELECT * FROM p320_19.genre WHERE name=%s",genre)
+        CURSOR.execute("SELECT * FROM p320_19.genre WHERE name LIKE '%",
+                       genre, "%';")
 
         rows = CURSOR.fetchall()
 
         for row in rows:
             print("Genre: ", row[1])
-            CURSOR.execute("SELECT * FROM p320_19.albums WHERE albumid=%s",
-                           (row[0]))
+            CURSOR.execute("SELECT * FROM p320_19.genres RIGHT JOIN "
+                           "p320_19.albums ON p320_19.genres.genreid "
+                           "= p320_19.albums.albumid;")
             rows1 = CURSOR.fetchall()
             for r in rows1:
                 print("Album: ", r[2], "Release Date: ", r[1])
 
-            CURSOR.execute("SELECT * FROM p320_19.artists WHERE artistid=%s",
-                           (row[0]))
+            CURSOR.execute("SELECT * FROM p320_19.genres RIGHT JOIN "
+                           "p320_19.artists ON p320_19.genres.genreid "
+                           "= p320_19.artists.artistid;")
             rows1 = CURSOR.fetchall()
             for r in rows1:
                 print("Artist: ", r[1])
 
-            CURSOR.execute("SELECT * FROM p320_19.songs WHERE songid=%s",
-                           (row[0]))
+            CURSOR.execute("SELECT * FROM p320_19.genres RIGHT JOIN "
+                           "p320_19.songs ON p320_19.genres.genreid "
+                           "= p320_19.songs.songid;")
             rows1 = CURSOR.fetchall()
             for r in rows1:
                 print("Song: ", row[2], "Release Date: ", row[1],
@@ -293,27 +302,30 @@ def search_genre(genre):
 # TODO Satvik
 def search_artist(artist):
     try:
-        CURSOR.execute("SELECT * FROM p320_19.artists WHERE name=%s",
-                       artist)
+        CURSOR.execute("SELECT * FROM p320_19.artists WHERE name LIKE '%",
+                       artist, "%';")
 
         rows = CURSOR.fetchall()
 
         for row in rows:
             print("Artist: ", row[1])
-            CURSOR.execute("SELECT * FROM p320_19.albums WHERE albumid=%s",
-                           (row[0]))
+            CURSOR.execute("SELECT * FROM p320_19.artists RIGHT JOIN "
+                           "p320_19.albums ON p320_19.artists.artistid "
+                           "= p320_19.albums.albumid;")
             rows1 = CURSOR.fetchall()
             for r in rows1:
                 print("Album: ", r[2], "Release Date: ", r[1])
 
-            CURSOR.execute("SELECT * FROM p320_19.genre WHERE genreid=%s",
-                           (row[0]))
+            CURSOR.execute("SELECT * FROM p320_19.artists RIGHT JOIN "
+                           "p320_19.genres ON p320_19.artists.artistid "
+                           "= p320_19.genres.genreid;")
             rows1 = CURSOR.fetchall()
             for r in rows1:
                 print("Genre: ", r[1])
 
-            CURSOR.execute("SELECT * FROM p320_19.songs WHERE songid=%s",
-                           (row[0]))
+            CURSOR.execute("SELECT * FROM p320_19.artists RIGHT JOIN "
+                           "p320_19.songs ON p320_19.artists.artistid "
+                           "= p320_19.songs.songid;")
             rows1 = CURSOR.fetchall()
             for r in rows1:
                 print("Song: ", row[2], "Release Date: ", row[1],
