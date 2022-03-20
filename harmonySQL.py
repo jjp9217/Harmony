@@ -13,6 +13,9 @@ import sqlconnect
 """
     Constants -----------------------------------------------------------------
 """
+
+welcome_banner = "\n////// Welcome to Harmony \\\\\\\\\\\\"
+
 register_sql = "insert into p320_19.\"user\" (username, acc_creation_date, password, first_name, last_name, email)" \
       "values (%s, %s, %s, %s, %s, %s);"
 
@@ -62,6 +65,9 @@ add_album_playlist_SQL="INSERT INTO p320_19.collection_albums(playlistid, \"albu
 delete_playlist_song_sql="DELETE from p320_19.collection_songs where playlistid=%s and songid=%s";
 
 delete_playlist_album_sql="DELETE from p320_19.collection_albums where playlistid=%s and \"albumID\"=%s";
+
+make_access_timestamp_sql="insert into p320_19.access_timestamps(timestampid, username, datetime) " \
+                          "values (default,%s,%s);"
 
 """
     Global Variables
@@ -124,6 +130,9 @@ def register():
         global USERNAME
         USERNAME = username
 
+        # Print welcome banner
+        print(welcome_banner) #TODO ALSO USE AN ACCESS TIMESTAMP
+
 """
     Log the user in.
     Check if the supplied username/password combo exists in the DB.
@@ -138,15 +147,19 @@ def login():
         entries = CURSOR.fetchall()
         if len(entries) > 0:
             print("Logged in as user '" + username + "'")
-            print("////// Welcome to Harmony \\\\\\\\\\")
+            print(welcome_banner)
             break
 
         else:
             print("Username or Password are misspelled, or do not match")
             username = input("Enter username: >")
             password = input("Enter password: >")
+
     global USERNAME
     USERNAME = username
+
+    CURSOR.execute(make_access_timestamp_sql,(username,datetime.date.today()))
+    CONNECTION.commit()
 
 
 # finished Justin
