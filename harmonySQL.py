@@ -308,10 +308,9 @@ def show_friends():
 
 
 # finished Ishan
-# TODO
 # Collection’s name
 # – Number of songs in the collection : finished by Justin
-# – Total duration in minutes
+# – Total duration in minutes : finished by Justin
 def show_playlists():
 
     try:
@@ -325,15 +324,40 @@ def show_playlists():
             print("Your playlists are: ")
             for p in CURSOR.fetchall():
 
+                # this grabs number of songs
                 CURSOR.execute(f"SELECT count(*) from p320_19.collection_songs WHERE playlistid={p[0]};")
                 num_songs = CURSOR.fetchone()[0]
                 CURSOR.execute(f"SELECT count(*) from p320_19.collection_albums INNER JOIN p320_19.collected_songs a on collection_albums.\"albumID\" = a.albumid WHERE playlistid={p[0]};")
                 num_songs += CURSOR.fetchone()[0]
+
+                # this grabs total duration
+                CURSOR.execute(f"SELECT sum(s.duration) from p320_19.collection_songs INNER JOIN p320_19.songs s on collection_songs.songid = s.songid WHERE playlistid={p[0]};")
+                # duration = str(CURSOR.fetchone()[0]).split(":")
+                # print(CURSOR.fetchone()[0])
+                time = str(CURSOR.fetchone()[0]).split(":")
+                duration = None
+                if time[0] != 'None':
+                    hours = int(time[0])
+                    minutes = int(time[1])
+                    seconds = float(time[2])
+                    duration = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
+                # duration = CURSOR.fetchone()[0]
+                CURSOR.execute(f"SELECT sum(s.duration) from p320_19.collection_albums ca INNER JOIN p320_19.albums a on ca.\"albumID\" = a.albumid INNER JOIN p320_19.collected_songs c on a.albumid = c.albumid INNER JOIN p320_19.songs s ON s.songid = c.songid WHERE playlistid={p[0]};")
+                time = str(CURSOR.fetchone()[0]).split(":")
+                if time[0] != 'None':
+                    hours = int(time[0])
+                    minutes = int(time[1])
+                    seconds = float(time[2])
+                    if duration is None:
+                        duration = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
+                    else:
+                        duration += datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
+
                 # Use str.join() to convert tuple to string.
                 # data = ''.join(p)
                 # print (data)
-                print(f"id:{str(p[0])}, Name:{p[1]}, number of songs:{num_songs}")
-    except Exception as e:
+                print(f"id:{str(p[0])}, Name:{p[1]}, number of songs:{num_songs}, duration {duration}")
+    except IndexError as e:
             print(e)
 
 
