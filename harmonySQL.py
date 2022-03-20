@@ -15,7 +15,7 @@ import sqlconnect
     Constants -----------------------------------------------------------------
 """
 
-welcome_banner = "\n////// Welcome to Harmony \\\\\\\\\\\\"
+welcome_banner = "\n////// Welcome to Harmony \\\\\\\\\\\\ \n"
 
 register_sql = "insert into p320_19.\"user\" (username, acc_creation_date, password, first_name, last_name, email)" \
                "values (%s, %s, %s, %s, %s, %s);"
@@ -75,6 +75,10 @@ user_exists_sql = "select username from p320_19.\"user\" where username = %s"
 select_friend_sql = "select * from p320_19.following where followed_username = %s and following_username = %s"
 
 insert_follow_sql = "insert into p320_19.following(followed_username, following_username) values (%s,%s)"
+
+get_all_following_sql = "select followed_username from p320_19.following where following_username = %s"
+
+remove_friend_sql = "delete from p320_19.following where followed_username = %s and following_username = %s"
 
 """
     Global Variables
@@ -359,24 +363,57 @@ def follow():
         CONNECTION.commit()
         print("Successfully followed user '" + target + "'")
 
+    #else they are already following this user
     else:
         print("Cannot follow user '" + target + "', you are already following them")
 
-    #else they are already following this user
+"""
+    The inverse of the follow function. Remove a followed/following pair from
+    the Following table.
+"""
+def unfollow():
 
+    global USERNAME
+    if USERNAME is None:
+        print("Illegal function use 'unfollow()', no user logged in")
+        return
+    #else
 
+    CURSOR.execute(get_all_following_sql, (USERNAME,))
 
+    raw_friends = CURSOR.fetchall()
 
+    if len(raw_friends) == 0:
+        print("You are not following any users")
+        return
 
+    friends = ""
+    for e in raw_friends:
+        for f in e:
+            friends = friends + str(f) + ", "
 
-# TODO
-def unfollow(email):
-    # need to check if user follows the username
-    ids = ['abc', 'xyz', 'mno']
-    if email in ids:
-        print("You unfollowed " + email)
-    else:
-        print("Wrong email. Please enter correct email!")
+    friends = friends[:-2] #remove trailing comma and space
+
+    print("You are currently following: " + friends)
+
+    target = input("Provide the username to unfollow: >")
+
+    if target == USERNAME:
+        print("You cannot unfollow yourself")
+        return
+
+    #check if exists (integrity check)
+    CURSOR.execute(user_exists_sql, (target,))
+    friend = CURSOR.fetchone()
+    if friend is None:
+        print("You are not currently friends with '" + friend + "'")
+        return
+
+    #else unfollow them
+
+    CURSOR.execute(remove_friend_sql, (target, USERNAME))
+    CONNECTION.commit()
+    print("Successfully unfollowed user '" + target + "'")
 
 
 # finished Justin
@@ -656,6 +693,8 @@ def user_playlist_check(playlistid):
 
 if __name__ == "__main__":
         login()
-
+        while True:
+            follow()
+            unfollow()
 
 
