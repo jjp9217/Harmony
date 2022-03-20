@@ -74,7 +74,7 @@ make_access_timestamp_sql = "insert into p320_19.access_timestamps(timestampid, 
 
 ASC = "ASC"
 
-SORT_BY = "song_name"
+SORT_BY = "s.name"
 
 get_all_following_sql = "select followed_username from p320_19.following where following_username = %s"
 
@@ -188,40 +188,61 @@ def logout():
 # TODO Satvik
 # Users can sort by song name, artist’s name, genre, and released year (ascending and
 # descending)
-def search_name(songname):
+# def search_name(songname):
+#     try:
+#         CURSOR.execute("SELECT * FROM p320_19.songs WHERE name LIKE '%",
+#                        songname, "%';")
+#         rows = CURSOR.fetchall()
+
+#         for row in rows:
+#             print("Song: ", row[2], "Release Date: ", row[1], "Duration: ",
+#                   row[3])
+#             CURSOR.execute("SELECT * FROM p320_19.songs RIGHT JOIN "
+#                            "p320_19.albums ON p320_19.songs.songsid "
+#                            "= p320_19.albums.albumid;")
+
+#             rows1 = CURSOR.fetchall()
+#             for r in rows1:
+#                 print("Album: ", r[2], "Release Date: ", r[1])
+
+#             CURSOR.execute("SELECT * FROM p320_19.songs RIGHT JOIN "
+#                            "p320_19.artists ON p320_19.songs.songsid = "
+#                            "p320_19.artists.artistid;")
+#             rows1 = CURSOR.fetchall()
+#             for r in rows1:
+#                 print("Artist: ", r[1])
+
+#             CURSOR.execute("SELECT * FROM p320_19.songs RIGHT JOIN "
+#                            "p320_19.genres ON p320_19.songs.songsid = "
+#                            "p320_19.genres.genreid;")
+#             rows1 = CURSOR.fetchall()
+#             for r in rows1:
+#                 print("Genre: ", r[1])
+
+#     except Exception as e:
+#         print(e)
+#         print("No results. Try a new Search.")
+
+def search_name(string):
     try:
-        CURSOR.execute("SELECT * FROM p320_19.songs WHERE name LIKE '%",
-                       songname, "%';")
-        rows = CURSOR.fetchall()
-
-        for row in rows:
-            print("Song: ", row[2], "Release Date: ", row[1], "Duration: ",
-                  row[3])
-            CURSOR.execute("SELECT * FROM p320_19.songs RIGHT JOIN "
-                           "p320_19.albums ON p320_19.songs.songsid "
-                           "= p320_19.albums.albumid;")
-
-            rows1 = CURSOR.fetchall()
-            for r in rows1:
-                print("Album: ", r[2], "Release Date: ", r[1])
-
-            CURSOR.execute("SELECT * FROM p320_19.songs RIGHT JOIN "
-                           "p320_19.artists ON p320_19.songs.songsid = "
-                           "p320_19.artists.artistid;")
-            rows1 = CURSOR.fetchall()
-            for r in rows1:
-                print("Artist: ", r[1])
-
-            CURSOR.execute("SELECT * FROM p320_19.songs RIGHT JOIN "
-                           "p320_19.genres ON p320_19.songs.songsid = "
-                           "p320_19.genres.genreid;")
-            rows1 = CURSOR.fetchall()
-            for r in rows1:
-                print("Genre: ", r[1])
-
+        SQL=f"SELECT s.name, s.release_date, s.duration, al.name, a.artist_name FROM p320_19.songs s INNER JOIN \
+            p320_19.artist_song_production asp ON s.songid =\
+            asp.songid INNER JOIN p320_19.artists a ON \
+            a.artistid = asp.artistid INNER JOIN \
+            p320_19.song_genre sg ON s.songid = sg.songid \
+            INNER JOIN p320_19.genres g ON sg.genreid = \
+            g.genreid INNER JOIN p320_19.song_in_album sia ON s.songid =\
+            sia.songid INNER JOIN p320_19.albums al ON \
+            al.albumid = sia.albumid\
+            where s.name like '%{string}%' ORDER BY {SORT_BY} {ASC} LIMIT 5;"
+        CURSOR.execute(SQL)
+        a = CURSOR.fetchall()
+        for i in a:
+            print("Song: ", i[0],"Artist: ",i[4], "Release Date: ", i[1], "Duration:",i[2],"Album: ",i[3])
     except Exception as e:
         print(e)
         print("No results. Try a new Search.")
+
 
 
 # TODO Satvik
