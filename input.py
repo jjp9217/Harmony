@@ -111,19 +111,19 @@ def input_songs():
 
 
 def input_genre():
-    file = open("Data/genre list.txt", newline='')
+    file = open("Data/Genres.txt", newline='')
     file.readline()
     parser = csv.reader(file)
     conn = sqlconnect.connect()
     cur = conn.cursor()
-    i = 1
     cur.execute("DELETE FROM p320_19.genres;")
     conn.commit()
     for line in parser:
-        genres = line[genre_idx].split(", ")
-        for genre in genres:
-            cur.execute(f"INSERT INTO p320_19.genres(genreid, name) Values ({i},'{genre}');")
-            i += 1
+        try:
+            cur.execute(f"INSERT INTO p320_19.genres( name) Values ('{line[0]}');")
+        except Exception as e:
+            print(e)
+        finally:
             conn.commit()
 
     sqlconnect.disconnect(conn)
@@ -151,7 +151,7 @@ def input_song_artist():
 
 
 def input_song_genre():
-    file = open("Data/MOCK_DATA_genre_song.csv", newline='')
+    file = open("Data/Song_genres.csv", newline='')
     file.readline()
     parser = csv.reader(file)
     conn = sqlconnect.connect()
@@ -188,7 +188,7 @@ def input_song_album():
 
 
 def input_album_genre():
-    file = open("Data/MOCK_DATA_album_genres.csv", newline='')
+    file = open("Data/album_genres.csv", newline='')
     file.readline()
     parser = csv.reader(file)
     conn = sqlconnect.connect()
@@ -227,9 +227,11 @@ if __name__ == "__main__":
     # probably best to not run all of these at once since they will remove all the data and repopulate the database
     # this takes a bit to do all at once
     # input_album_artist()
-
+    input_album_genre()
+    # input_genre()
+    # input_song_genre()
     # input_album_genre()
-    input_song_album()
+    # input_song_album()
     # input_artists()
 
     # input_songs()
