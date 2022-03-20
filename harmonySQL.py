@@ -31,7 +31,7 @@ register_SQL = "insert into p320_19.\"user\" (username, acc_creation_date, passw
 
 create_playlist_SQL = "INSERT INTO p320_19.playlists(name, username) Values (%s, %s);"
 
-# TODO DO NOT PUT THIS IN PRODUCTION
+# TODO
 search_user_SQL = "SELECT * FROM p320_19.dummy;"
 
 user_login_check_sql = "select * from p320_19.\"user\" where username = %s and password = %s;"
@@ -69,12 +69,6 @@ delete_playlist_album_sql = "DELETE from p320_19.collection_albums where playlis
 
 make_access_timestamp_sql = "insert into p320_19.access_timestamps(timestampid, username, datetime) " \
                             "values (default,%s,%s);"
-
-user_exists_sql = "select username from p320_19.\"user\" where username = %s"
-
-select_friend_sql = "select * from p320_19.following where followed_username = %s and following_username = %s"
-
-insert_follow_sql = "insert into p320_19.following(followed_username, following_username) values (%s,%s)"
 
 """
     Global Variables
@@ -145,6 +139,7 @@ def register():
     # Print welcome banner
     print(welcome_banner)  # TODO ALSO USE AN ACCESS TIMESTAMP
 
+
 """
     Log the user in.
     Check if the supplied username/password combo exists in the DB.
@@ -179,13 +174,13 @@ def login():
 # finished Justin
 def logout():
     sqlconnect.disconnect(CONNECTION)
-    print("Logged Out\n ////// Goodbye \\\\\\\\\\\\")
+    print("logged out\nGOODBYE")
 
 
 # TODO Satvik
 def search_name(songname):
     try:
-        CURSOR.execute("SELECT * FROM songs WHERE name=?",
+        CURSOR.execute("SELECT * FROM p320_19.songs WHERE name=%s",
                        songname)
 
         rows = CURSOR.fetchall()
@@ -193,19 +188,19 @@ def search_name(songname):
         for row in rows:
             print("Song: ", row[2], "Release Date: ", row[1], "Duration: ",
                   row[3])
-            CURSOR.execute("SELECT * FROM albums WHERE albumid=?",
+            CURSOR.execute("SELECT * FROM p320_19.albums WHERE albumid=%s",
                            (row[0]))
             rows1 = CURSOR.fetchall()
             for r in rows1:
                 print("Album: ", r[2], "Release Date: ", r[1])
 
-            CURSOR.execute("SELECT * FROM artists WHERE artistid=?",
-                           (row[0]))
+            CURSOR.execute("SELECT * FROM p320_19.artists WHERE "
+                           "artistid=%s", (row[0]))
             rows1 = CURSOR.fetchall()
             for r in rows1:
                 print("Artist: ", r[1])
 
-            CURSOR.execute("SELECT * FROM genre WHERE genreid=?",
+            CURSOR.execute("SELECT * FROM p320_19.genre WHERE genreid=%s",
                            (row[0]))
             rows1 = CURSOR.fetchall()
             for r in rows1:
@@ -219,26 +214,26 @@ def search_name(songname):
 # TODO Satvik
 def search_album(album):
     try:
-        CURSOR.execute("SELECT * FROM albums WHERE name=?",
+        CURSOR.execute("SELECT * FROM p320_19.albums WHERE name=%s",
                        album)
 
         rows = CURSOR.fetchall()
 
         for row in rows:
             print("Album: ", row[2], "Release Date: ", row[1])
-            CURSOR.execute("SELECT * FROM artists WHERE artistid=?",
-                           (row[0]))
+            CURSOR.execute("SELECT * FROM p320_19.artists WHERE "
+                           "artistid=%s", (row[0]))
             rows1 = CURSOR.fetchall()
             for r in rows1:
                 print("Artist: ", r[1])
 
-            CURSOR.execute("SELECT * FROM genre WHERE genreid=?",
+            CURSOR.execute("SELECT * FROM p320_19.genre WHERE genreid=%s",
                            (row[0]))
             rows1 = CURSOR.fetchall()
             for r in rows1:
                 print("Genre: ", r[1])
 
-            CURSOR.execute("SELECT * FROM songs WHERE songid=?",
+            CURSOR.execute("SELECT * FROM p320_19.songs WHERE songid=%s",
                            (row[0]))
             rows1 = CURSOR.fetchall()
             for r in rows1:
@@ -253,26 +248,25 @@ def search_album(album):
 # TODO Satvik
 def search_genre(genre):
     try:
-        CURSOR.execute("SELECT * FROM genre WHERE name=?",
-                       genre)
+        CURSOR.execute("SELECT * FROM p320_19.genre WHERE name=%s",genre)
 
         rows = CURSOR.fetchall()
 
         for row in rows:
             print("Genre: ", row[1])
-            CURSOR.execute("SELECT * FROM albums WHERE albumid=?",
+            CURSOR.execute("SELECT * FROM p320_19.albums WHERE albumid=%s",
                            (row[0]))
             rows1 = CURSOR.fetchall()
             for r in rows1:
                 print("Album: ", r[2], "Release Date: ", r[1])
 
-            CURSOR.execute("SELECT * FROM artists WHERE artistid=?",
+            CURSOR.execute("SELECT * FROM p320_19.artists WHERE artistid=%s",
                            (row[0]))
             rows1 = CURSOR.fetchall()
             for r in rows1:
                 print("Artist: ", r[1])
 
-            CURSOR.execute("SELECT * FROM songs WHERE songid=?",
+            CURSOR.execute("SELECT * FROM p320_19.songs WHERE songid=%s",
                            (row[0]))
             rows1 = CURSOR.fetchall()
             for r in rows1:
@@ -287,26 +281,26 @@ def search_genre(genre):
 # TODO Satvik
 def search_artist(artist):
     try:
-        CURSOR.execute("SELECT * FROM artists WHERE name=?",
+        CURSOR.execute("SELECT * FROM p320_19.artists WHERE name=%s",
                        artist)
 
         rows = CURSOR.fetchall()
 
         for row in rows:
             print("Artist: ", row[1])
-            CURSOR.execute("SELECT * FROM albums WHERE albumid=?",
+            CURSOR.execute("SELECT * FROM p320_19.albums WHERE albumid=%s",
                            (row[0]))
             rows1 = CURSOR.fetchall()
             for r in rows1:
                 print("Album: ", r[2], "Release Date: ", r[1])
 
-            CURSOR.execute("SELECT * FROM genre WHERE genreid=?",
+            CURSOR.execute("SELECT * FROM p320_19.genre WHERE genreid=%s",
                            (row[0]))
             rows1 = CURSOR.fetchall()
             for r in rows1:
                 print("Genre: ", r[1])
 
-            CURSOR.execute("SELECT * FROM songs WHERE songid=?",
+            CURSOR.execute("SELECT * FROM p320_19.songs WHERE songid=%s",
                            (row[0]))
             rows1 = CURSOR.fetchall()
             for r in rows1:
@@ -317,56 +311,14 @@ def search_artist(artist):
         print(e)
         print("No results. Try a new Search.")
 
-"""
-    A function to allow the current user to follow another user.
-    If no user is logged in, function will stop.
-    If user is already friends with target, function will alert user and stop.
-    If target does not exist, then alert user and stop.
-    Users cannot friend themselves.
-"""
-def follow():
 
-    global USERNAME
-    if USERNAME is None:
-        print("Illegal function use 'follow()', no user logged in")
-        return
-    #else
-
-    target = input("Provide the username to follow: >")
-
-    if target == USERNAME:
-        print("You cannot follow yourself")
-        return
-
-    #check if exists
-    CURSOR.execute(user_exists_sql, (target,))
-
-    friend = CURSOR.fetchone()
-
-    if friend is None:
-        print("The user '" + target + "' does not exist")
-        return
-
-    #check if already friend
-    #args: followed, follower
-    CURSOR.execute(select_friend_sql, (target,USERNAME))
-
-    current_following = CURSOR.fetchone()
-
-    if current_following is None:
-        #add the user
-        CURSOR.execute(insert_follow_sql, (target, USERNAME))
-        CONNECTION.commit()
-        print("Successfully followed user '" + target + "'")
-
+# TODO
+def follow(email):
+    ids = ['abc', 'xyz', 'mno']
+    if email in ids:
+        print("You now follow " + email)
     else:
-        print("Cannot follow user '" + target + "', you are already following them")
-
-    #else they are already following this user
-
-
-
-
+        print("Wrong email. Please enter correct email!")
 
 
 # TODO
@@ -655,7 +607,10 @@ def user_playlist_check(playlistid):
 
 
 if __name__ == "__main__":
-        login()
+    login()
+
+
+
 
 
 
