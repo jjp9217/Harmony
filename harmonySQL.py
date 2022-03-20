@@ -31,7 +31,7 @@ register_SQL = "insert into p320_19.\"user\" (username, acc_creation_date, passw
 
 create_playlist_SQL = "INSERT INTO p320_19.playlists(name, username) Values (%s, %s);"
 
-# TODO
+# TODO DO NOT PUT THIS IN PRODUCTION
 search_user_SQL = "SELECT * FROM p320_19.dummy;"
 
 user_login_check_sql = "select * from p320_19.\"user\" where username = %s and password = %s;"
@@ -69,6 +69,12 @@ delete_playlist_album_sql="DELETE from p320_19.collection_albums where playlisti
 
 make_access_timestamp_sql="insert into p320_19.access_timestamps(timestampid, username, datetime) " \
                           "values (default,%s,%s);"
+
+user_exists_sql = "select username from p320_19.\"user\" where username = %s"
+
+select_friend_sql = "select * from p320_19.following where followed_username = %s and following_username = %s"
+
+insert_follow_sql = "insert into p320_19.following(followed_username, following_username) values (%s,%s)"
 
 """
     Global Variables
@@ -166,7 +172,7 @@ def login():
 # finished Justin
 def logout():
     sqlconnect.disconnect(CONNECTION)
-    print("logged out\nGOODBYE")
+    print("Logged Out\n ////// Goodbye \\\\\\\\\\\\")
 
 
 # TODO
@@ -188,14 +194,56 @@ def search_genre(genre):
 def search_artist(artist):
     print(artist)
 
+"""
+    A function to allow the current user to follow another user.
+    If no user is logged in, function will stop.
+    If user is already friends with target, function will alert user and stop.
+    If target does not exist, then alert user and stop.
+    Users cannot friend themselves.
+"""
+def follow():
 
-# TODO
-def follow(email):
-    ids = ['abc','xyz','mno']
-    if email in ids:
-        print("You now follow "+email)
+    global USERNAME
+    if USERNAME is None:
+        print("Illegal function use 'follow()', no user logged in")
+        return
+    #else
+
+    target = input("Provide the username to follow: >")
+
+    if target == USERNAME:
+        print("You cannot follow yourself")
+        return
+
+    #check if exists
+    CURSOR.execute(user_exists_sql, (target,))
+
+    friend = CURSOR.fetchone()
+
+    if friend is None:
+        print("The user '" + target + "' does not exist")
+        return
+
+    #check if already friend
+    #args: followed, follower
+    CURSOR.execute(select_friend_sql, (target,USERNAME))
+
+    current_following = CURSOR.fetchone()
+
+    if current_following is None:
+        #add the user
+        CURSOR.execute(insert_follow_sql, (target, USERNAME))
+        CONNECTION.commit()
+        print("Successfully followed user '" + target + "'")
+
     else:
-        print("Wrong email. Please enter correct email!")
+        print("Cannot follow user '" + target + "', you are already following them")
+
+    #else they are already following this user
+
+
+
+
 
 
 # TODO
@@ -471,5 +519,7 @@ def user_playlist_check(playlistid):
 
 if __name__ == "__main__":
         login()
+        while True:
+            follow()
 
 
