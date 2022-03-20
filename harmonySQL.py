@@ -7,7 +7,7 @@ Note that the actions here are ONLY for user interactions.
 Any developer tools should use a different file.
 """
 import datetime
-from tkinter.messagebox import NO
+
 import sqlconnect
 
 """
@@ -45,7 +45,9 @@ change_playlist_name_SQL = "Update p320_19.playlists SET name=%s WHERE playlisti
 
 play_song_SQL = "INSERT INTO p320_19.listens(songid, username, datetime) VALUES (%s, %s, %s)"
 
+select_songs_in_playlist = "SELECT songid from p320_19.collection_songs WHERE playlistid=%s;"
 
+select_albums_in_playlist = "SELECT \"albumID\" from p320_19.collection_albums WHERE playlistid=%s;"
 
 """
     Global Variables
@@ -308,7 +310,7 @@ def show_friends():
 # finished Ishan
 # TODO
 # Collection’s name
-# – Number of songs in the collection
+# – Number of songs in the collection : finished by Justin
 # – Total duration in minutes
 def show_playlists():
 
@@ -322,10 +324,15 @@ def show_playlists():
             # print playlists
             print("Your playlists are: ")
             for p in CURSOR.fetchall():
+
+                CURSOR.execute(f"SELECT count(*) from p320_19.collection_songs WHERE playlistid={p[0]};")
+                num_songs = CURSOR.fetchone()[0]
+                CURSOR.execute(f"SELECT count(*) from p320_19.collection_albums INNER JOIN p320_19.collected_songs a on collection_albums.\"albumID\" = a.albumid WHERE playlistid={p[0]};")
+                num_songs += CURSOR.fetchone()[0]
                 # Use str.join() to convert tuple to string.
                 # data = ''.join(p)
                 # print (data)
-                print("id "+str(p[0])+": Name: "+p[1])
+                print(f"id:{str(p[0])}, Name:{p[1]}, number of songs:{num_songs}")
     except Exception as e:
             print(e)
 
@@ -349,7 +356,7 @@ def play_song(songid):
         print(f"song id:{songid} does not exist")
         return
     try:
-        current_date = str(datetime.date.today())
+        current_date = str(datetime.datetime.now())
         CURSOR.execute(play_song_SQL, (songid, USERNAME, current_date))
         print(f"playing {song_name[0]}........")
     except Exception as e:

@@ -13,7 +13,7 @@ def help():
     print("Commands to run:")
     print("--help")
     print("--play song 'songid")
-    print("--play playlist 'playlist-name'")
+    print("--play playlist 'id'")
     print("--follow 'email'")
     print("--unfollow 'email'")
     print("--create playlist 'name'")
