@@ -18,7 +18,7 @@ import sqlconnect
 welcome_banner = "\n////// Welcome to Harmony \\\\\\\\\\\\"
 
 register_sql = "insert into p320_19.\"user\" (username, acc_creation_date, password, first_name, last_name, email)" \
-      "values (%s, %s, %s, %s, %s, %s);"
+               "values (%s, %s, %s, %s, %s, %s);"
 
 user_exists_sql = "select * from p320_19.\"user\" where username = %s"
 
@@ -27,7 +27,7 @@ email_exists_sql = "select * from p320_19.\"user\" where email = %s"
 login_SQL = "select * from p320_19.\"user\" where username = %s and password = %s;"
 
 register_SQL = "insert into p320_19.\"user\" (username, acc_creation_date, password, first_name, last_name, email)" \
-      "values (%s, %s, %s, %s, %s, %s);"
+               "values (%s, %s, %s, %s, %s, %s);"
 
 create_playlist_SQL = "INSERT INTO p320_19.playlists(name, username) Values (%s, %s);"
 
@@ -36,14 +36,14 @@ search_user_SQL = "SELECT * FROM p320_19.dummy;"
 
 user_login_check_sql = "select * from p320_19.\"user\" where username = %s and password = %s;"
 
-show_friends_sql="select following_username FROM p320_19.following where follower_username = %s";
+show_friends_sql = "select following_username FROM p320_19.following where follower_username = %s";
 
-show_playlists_sql="select playlistid, name FROM p320_19.playlists where username = %s order by name asc"
+show_playlists_sql = "select playlistid, name FROM p320_19.playlists where username = %s order by name asc"
 
-add_song_playlist_SQL="INSERT INTO p320_19.collection_songs(playlistid, songid) Values (%s,%s);"
+add_song_playlist_SQL = "INSERT INTO p320_19.collection_songs(playlistid, songid) Values (%s,%s);"
 
-#check if playlist belongs to user
-user_playlistid_check_sql="select playlistid FROM p320_19.playlists where username = %s"
+# check if playlist belongs to user
+user_playlistid_check_sql = "select playlistid FROM p320_19.playlists where username = %s"
 
 change_playlist_name_SQL = "Update p320_19.playlists SET name=%s WHERE playlistid=%s"
 
@@ -55,20 +55,20 @@ select_albums_in_playlist = "SELECT \"albumID\" from p320_19.collection_albums W
 
 delete_playlist_sql = "Delete from p320_19.playlists where playlistid=%s"
 
-delete_song_with_playlist="Delete from p320_19.collection_songs where playlistid=%s"
+delete_song_with_playlist = "Delete from p320_19.collection_songs where playlistid=%s"
 
-delete_album_with_playlist="Delete from p320_19.collection_albums where playlistid=%s"
+delete_album_with_playlist = "Delete from p320_19.collection_albums where playlistid=%s"
 
-add_song_playlist_SQL="INSERT INTO p320_19.collection_songs(playlistid, songid) Values (%s,%s);"
+add_song_playlist_SQL = "INSERT INTO p320_19.collection_songs(playlistid, songid) Values (%s,%s);"
 
-add_album_playlist_SQL="INSERT INTO p320_19.collection_albums(playlistid, \"albumID\") Values (%s,%s);"
+add_album_playlist_SQL = "INSERT INTO p320_19.collection_albums(playlistid, \"albumID\") Values (%s,%s);"
 
-delete_playlist_song_sql="DELETE from p320_19.collection_songs where playlistid=%s and songid=%s";
+delete_playlist_song_sql = "DELETE from p320_19.collection_songs where playlistid=%s and songid=%s";
 
-delete_playlist_album_sql="DELETE from p320_19.collection_albums where playlistid=%s and \"albumID\"=%s";
+delete_playlist_album_sql = "DELETE from p320_19.collection_albums where playlistid=%s and \"albumID\"=%s";
 
-make_access_timestamp_sql="insert into p320_19.access_timestamps(timestampid, username, datetime) " \
-                          "values (default,%s,%s);"
+make_access_timestamp_sql = "insert into p320_19.access_timestamps(timestampid, username, datetime) " \
+                            "values (default,%s,%s);"
 
 """
     Global Variables
@@ -78,7 +78,6 @@ CURSOR = CONNECTION.cursor()
 
 global USERNAME
 
-
 """
     User action functions -----------------------------------------------------
 """
@@ -87,59 +86,67 @@ global USERNAME
     User registration function.
     Creates a new user and adds it to the DB. Does check if name is taken to prevent crashing.
 """
+
+
 def register():
+    ### Build the user input
+    username = input("Provide a new username: >")
 
-        ### Build the user input
-        username = input("Provide a new username: >")
+    # Make sure the username is unique -- it is the key for the "users" table
+    while True:
 
-        #Make sure the username is unique -- it is the key for the "users" table
-        while True:
+        CURSOR.execute(user_exists_sql, (
+        username,))  # Note that even single arguments must be tuple-wrapped
+        entries = CURSOR.fetchall()
+        if len(entries) > 0:
+            print("The username '" + username + "' is taken")
+            username = input("Provide a new username: >")
+            continue
+        else:
+            break
 
-                CURSOR.execute(user_exists_sql, (username,)) #Note that even single arguments must be tuple-wrapped
-                entries = CURSOR.fetchall()
-                if len(entries) > 0:
-                        print("The username '" + username +"' is taken")
-                        username = input("Provide a new username: >")
-                        continue
-                else:
-                        break
+    password = input("Provide a new password: >")
+    f_name = input("First name: >")
+    l_name = input("Last name: >")
+    current_date = str(
+        datetime.date.today())  # cast date to yyyy-mm-dd string
 
-        password = input("Provide a new password: >")
-        f_name = input("First name: >")
-        l_name = input("Last name: >")
-        current_date = str(datetime.date.today()) #cast date to yyyy-mm-dd string
+    email = input("Provide an email address: >")
 
-        email = input("Provide an email address: >")
+    # Make sure the email is unique -- which is part of project requirements
+    while True:
 
-        # Make sure the email is unique -- which is part of project requirements
-        while True:
+        CURSOR.execute(email_exists_sql, (
+        email,))  # Note that even single arguments must be tuple-wrapped
+        entries = CURSOR.fetchall()
+        if len(entries) > 0:
+            print(
+                "The username '" + email + "' is already in use with an account")
+            email = input("Provide a different email: >")
+            continue
+        else:
+            break
 
-            CURSOR.execute(email_exists_sql, (email,))  # Note that even single arguments must be tuple-wrapped
-            entries = CURSOR.fetchall()
-            if len(entries) > 0:
-                print("The username '" + email + "' is already in use with an account")
-                email = input("Provide a different email: >")
-                continue
-            else:
-                break
+    # Now try to add this person to the DB.
+    CURSOR.execute(register_sql, (
+    username, current_date, password, f_name, l_name, email))
 
-        # Now try to add this person to the DB.
-        CURSOR.execute(register_sql, (username, current_date, password,  f_name, l_name, email ))
+    # Make the change
+    CONNECTION.commit()
+    global USERNAME
+    USERNAME = username
 
-        # Make the change
-        CONNECTION.commit()
-        global USERNAME
-        USERNAME = username
+    # Print welcome banner
+    print(welcome_banner)  # TODO ALSO USE AN ACCESS TIMESTAMP
 
-        # Print welcome banner
-        print(welcome_banner) #TODO ALSO USE AN ACCESS TIMESTAMP
 
 """
     Log the user in.
     Check if the supplied username/password combo exists in the DB.
 """
-def login():
 
+
+def login():
     username = input("Enter username: >")
     password = input("Enter password: >")
 
@@ -159,7 +166,8 @@ def login():
     global USERNAME
     USERNAME = username
 
-    CURSOR.execute(make_access_timestamp_sql,(username,datetime.date.today()))
+    CURSOR.execute(make_access_timestamp_sql,
+                   (username, datetime.date.today()))
     CONNECTION.commit()
 
 
@@ -169,31 +177,147 @@ def logout():
     print("logged out\nGOODBYE")
 
 
-# TODO
+# TODO Satvik
 def search_name(songname):
-    print(songname)
+    try:
+        CURSOR.execute("SELECT * FROM songs WHERE name=?",
+                       songname)
+
+        rows = CURSOR.fetchall()
+
+        for row in rows:
+            print("Song: ", row[2], "Release Date: ", row[1], "Duration: ",
+                  row[3])
+            CURSOR.execute("SELECT * FROM albums WHERE albumid=?",
+                           (row[0]))
+            rows1 = CURSOR.fetchall()
+            for r in rows1:
+                print("Album: ", r[2], "Release Date: ", r[1])
+
+            CURSOR.execute("SELECT * FROM artists WHERE artistid=?",
+                           (row[0]))
+            rows1 = CURSOR.fetchall()
+            for r in rows1:
+                print("Artist: ", r[1])
+
+            CURSOR.execute("SELECT * FROM genre WHERE genreid=?",
+                           (row[0]))
+            rows1 = CURSOR.fetchall()
+            for r in rows1:
+                print("Genre: ", r[1])
+
+    except Exception as e:
+        print(e)
+        print("No results. Try a new Search.")
 
 
-# TODO
+# TODO Satvik
 def search_album(album):
-    print(album)
+    try:
+        CURSOR.execute("SELECT * FROM albums WHERE name=?",
+                       album)
+
+        rows = CURSOR.fetchall()
+
+        for row in rows:
+            print("Album: ", row[2], "Release Date: ", row[1])
+            CURSOR.execute("SELECT * FROM artists WHERE artistid=?",
+                           (row[0]))
+            rows1 = CURSOR.fetchall()
+            for r in rows1:
+                print("Artist: ", r[1])
+
+            CURSOR.execute("SELECT * FROM genre WHERE genreid=?",
+                           (row[0]))
+            rows1 = CURSOR.fetchall()
+            for r in rows1:
+                print("Genre: ", r[1])
+
+            CURSOR.execute("SELECT * FROM songs WHERE songid=?",
+                           (row[0]))
+            rows1 = CURSOR.fetchall()
+            for r in rows1:
+                print("Song: ", row[2], "Release Date: ", row[1],
+                      "Duration: ", row[3])
+
+    except Exception as e:
+        print(e)
+        print("No results. Try a new Search.")
 
 
-# TODO
+# TODO Satvik
 def search_genre(genre):
-    print(genre)
+    try:
+        CURSOR.execute("SELECT * FROM genre WHERE name=?",
+                       genre)
+
+        rows = CURSOR.fetchall()
+
+        for row in rows:
+            print("Genre: ", row[1])
+            CURSOR.execute("SELECT * FROM albums WHERE albumid=?",
+                           (row[0]))
+            rows1 = CURSOR.fetchall()
+            for r in rows1:
+                print("Album: ", r[2], "Release Date: ", r[1])
+
+            CURSOR.execute("SELECT * FROM artists WHERE artistid=?",
+                           (row[0]))
+            rows1 = CURSOR.fetchall()
+            for r in rows1:
+                print("Artist: ", r[1])
+
+            CURSOR.execute("SELECT * FROM songs WHERE songid=?",
+                           (row[0]))
+            rows1 = CURSOR.fetchall()
+            for r in rows1:
+                print("Song: ", row[2], "Release Date: ", row[1],
+                      "Duration: ", row[3])
+
+    except Exception as e:
+        print(e)
+        print("No results. Try a new Search.")
 
 
-# TODO
+# TODO Satvik
 def search_artist(artist):
-    print(artist)
+    try:
+        CURSOR.execute("SELECT * FROM artists WHERE name=?",
+                       artist)
+
+        rows = CURSOR.fetchall()
+
+        for row in rows:
+            print("Artist: ", row[1])
+            CURSOR.execute("SELECT * FROM albums WHERE albumid=?",
+                           (row[0]))
+            rows1 = CURSOR.fetchall()
+            for r in rows1:
+                print("Album: ", r[2], "Release Date: ", r[1])
+
+            CURSOR.execute("SELECT * FROM genre WHERE genreid=?",
+                           (row[0]))
+            rows1 = CURSOR.fetchall()
+            for r in rows1:
+                print("Genre: ", r[1])
+
+            CURSOR.execute("SELECT * FROM songs WHERE songid=?",
+                           (row[0]))
+            rows1 = CURSOR.fetchall()
+            for r in rows1:
+                print("Song: ", row[2], "Release Date: ", row[1],
+                      "Duration: ", row[3])
+
+    except Exception as e:
+        print(e)
+        print("No results. Try a new Search.")
 
 
 # TODO
 def follow(email):
-    ids = ['abc','xyz','mno']
+    ids = ['abc', 'xyz', 'mno']
     if email in ids:
-        print("You now follow "+email)
+        print("You now follow " + email)
     else:
         print("Wrong email. Please enter correct email!")
 
@@ -201,9 +325,9 @@ def follow(email):
 # TODO
 def unfollow(email):
     # need to check if user follows the username
-    ids = ['abc','xyz','mno']
+    ids = ['abc', 'xyz', 'mno']
     if email in ids:
-        print("You unfollowed "+email)
+        print("You unfollowed " + email)
     else:
         print("Wrong email. Please enter correct email!")
 
@@ -225,8 +349,8 @@ def delete_playlist(playlist):
     if user_playlist_check(playlist):
         try:
             CURSOR.execute(delete_playlist_sql, (playlist,))
-            CURSOR.execute(delete_song_with_playlist,(playlist,))
-            CURSOR.execute(delete_album_with_playlist,(playlist,))
+            CURSOR.execute(delete_song_with_playlist, (playlist,))
+            CURSOR.execute(delete_album_with_playlist, (playlist,))
             CONNECTION.commit()
             print(f"Playlist id:{playlist} deleted")
 
@@ -253,19 +377,21 @@ def add_playlist_song(playlist, songid):
         print(f"You do not own a playlist with id:{playlist}")
 
 
-
 # finished Ishan
-def delete_playlist_song(playlist,songid):
+def delete_playlist_song(playlist, songid):
     # check if playlist has songid
     if user_playlist_check(playlist):
         try:
-            CURSOR.execute(select_songs_in_playlist,(playlist,))
+            CURSOR.execute(select_songs_in_playlist, (playlist,))
             if CURSOR.fetchone() is None:
-                print(f"song id:{songid} doesnot exist in playlist id:{playlist}")
+                print(
+                    f"song id:{songid} doesnot exist in playlist id:{playlist}")
             else:
-                CURSOR.execute(delete_playlist_song_sql, (playlist, songid))
+                CURSOR.execute(delete_playlist_song_sql,
+                               (playlist, songid))
                 CONNECTION.commit()
-                print(f"song id:{songid} deleted from playlist id:{playlist}")
+                print(
+                    f"song id:{songid} deleted from playlist id:{playlist}")
         except Exception as e:
             print(e)
         finally:
@@ -275,7 +401,7 @@ def delete_playlist_song(playlist,songid):
 
 
 # finished Ishan
-def add_playlist_album(playlist,albumid):
+def add_playlist_album(playlist, albumid):
     if user_playlist_check(playlist):
         try:
             CURSOR.execute(add_album_playlist_SQL, (playlist, albumid))
@@ -290,17 +416,20 @@ def add_playlist_album(playlist,albumid):
 
 
 # finished Ishan
-def delete_playlist_album(playlist,albumid):
+def delete_playlist_album(playlist, albumid):
     # check if playlist has songid
     if user_playlist_check(playlist):
         try:
-            CURSOR.execute(select_albums_in_playlist,(playlist,))
+            CURSOR.execute(select_albums_in_playlist, (playlist,))
             if CURSOR.fetchone() is None:
-                print(f"album id:{albumid} doesnot exist in playlist id:{playlist}")
+                print(
+                    f"album id:{albumid} doesnot exist in playlist id:{playlist}")
             else:
-                CURSOR.execute(delete_playlist_album_sql, (playlist, albumid))
+                CURSOR.execute(delete_playlist_album_sql,
+                               (playlist, albumid))
                 CONNECTION.commit()
-                print(f"album id:{albumid} deleted from playlist id:{playlist}")
+                print(
+                    f"album id:{albumid} deleted from playlist id:{playlist}")
         except Exception as e:
             print(e)
         finally:
@@ -325,9 +454,8 @@ def change_playlist_name(playlistid, newname):
 
 # finished Ishan
 def show_friends():
-
     try:
-        CURSOR.execute(show_friends_sql,(USERNAME,))
+        CURSOR.execute(show_friends_sql, (USERNAME,))
 
         if CURSOR.fetchone() is None:
             print("You have no friends")
@@ -338,9 +466,9 @@ def show_friends():
             for p in CURSOR.fetchall():
                 # Use str.join() to convert tuple to string.
                 data = ''.join(p)
-                print (data)
+                print(data)
     except Exception as e:
-            print(e)
+        print(e)
 
 
 # finished Ishan
@@ -348,9 +476,8 @@ def show_friends():
 # – Number of songs in the collection : finished by Justin
 # – Total duration in minutes : finished by Justin
 def show_playlists():
-
     try:
-        CURSOR.execute(show_playlists_sql,(USERNAME,))
+        CURSOR.execute(show_playlists_sql, (USERNAME,))
 
         if CURSOR.fetchone() is None:
             print("You have no playlists")
@@ -361,13 +488,16 @@ def show_playlists():
             for p in CURSOR.fetchall():
 
                 # this grabs number of songs
-                CURSOR.execute(f"SELECT count(*) from p320_19.collection_songs WHERE playlistid={p[0]};")
+                CURSOR.execute(
+                    f"SELECT count(*) from p320_19.collection_songs WHERE playlistid={p[0]};")
                 num_songs = CURSOR.fetchone()[0]
-                CURSOR.execute(f"SELECT count(*) from p320_19.collection_albums INNER JOIN p320_19.collected_songs a on collection_albums.\"albumID\" = a.albumid WHERE playlistid={p[0]};")
+                CURSOR.execute(
+                    f"SELECT count(*) from p320_19.collection_albums INNER JOIN p320_19.collected_songs a on collection_albums.\"albumID\" = a.albumid WHERE playlistid={p[0]};")
                 num_songs += CURSOR.fetchone()[0]
 
                 # this grabs total duration
-                CURSOR.execute(f"SELECT sum(s.duration) from p320_19.collection_songs INNER JOIN p320_19.songs s on collection_songs.songid = s.songid WHERE playlistid={p[0]};")
+                CURSOR.execute(
+                    f"SELECT sum(s.duration) from p320_19.collection_songs INNER JOIN p320_19.songs s on collection_songs.songid = s.songid WHERE playlistid={p[0]};")
                 # duration = str(CURSOR.fetchone()[0]).split(":")
                 # print(CURSOR.fetchone()[0])
                 time = str(CURSOR.fetchone()[0]).split(":")
@@ -376,34 +506,41 @@ def show_playlists():
                     hours = int(time[0])
                     minutes = int(time[1])
                     seconds = float(time[2])
-                    duration = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
+                    duration = datetime.timedelta(hours=hours,
+                                                  minutes=minutes,
+                                                  seconds=seconds)
                 # duration = CURSOR.fetchone()[0]
-                CURSOR.execute(f"SELECT sum(s.duration) from p320_19.collection_albums ca INNER JOIN p320_19.albums a on ca.\"albumID\" = a.albumid INNER JOIN p320_19.collected_songs c on a.albumid = c.albumid INNER JOIN p320_19.songs s ON s.songid = c.songid WHERE playlistid={p[0]};")
+                CURSOR.execute(
+                    f"SELECT sum(s.duration) from p320_19.collection_albums ca INNER JOIN p320_19.albums a on ca.\"albumID\" = a.albumid INNER JOIN p320_19.collected_songs c on a.albumid = c.albumid INNER JOIN p320_19.songs s ON s.songid = c.songid WHERE playlistid={p[0]};")
                 time = str(CURSOR.fetchone()[0]).split(":")
                 if time[0] != 'None':
                     hours = int(time[0])
                     minutes = int(time[1])
                     seconds = float(time[2])
                     if duration is None:
-                        duration = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
+                        duration = datetime.timedelta(hours=hours,
+                                                      minutes=minutes,
+                                                      seconds=seconds)
                     else:
-                        duration += datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
+                        duration += datetime.timedelta(hours=hours,
+                                                       minutes=minutes,
+                                                       seconds=seconds)
 
                 # Use str.join() to convert tuple to string.
                 # data = ''.join(p)
                 # print (data)
-                print(f"id:{str(p[0])}, Name:{p[1]}, number of songs:{num_songs}, duration {duration}")
+                print(
+                    f"id:{str(p[0])}, Name:{p[1]}, number of songs:{num_songs}, duration {duration}")
     except IndexError as e:
-            print(e)
-
+        print(e)
 
 
 # TODO
 def search_user(string):
-    user=["xyz","mno","is4761","ishan"]
+    user = ["xyz", "mno", "is4761", "ishan"]
     for u in user:
-        if u[:len(string)]==string:
-            print("Found " +u)
+        if u[:len(string)] == string:
+            print("Found " + u)
 
 
 # "finished" Justin
@@ -427,7 +564,8 @@ def play_song(songid):
 
 # TODO Justin
 def play_playlist(playlistid):
-    CURSOR.execute(f"SELECT name from p320_19.playlists WHERE playlistid={playlistid}")
+    CURSOR.execute(
+        f"SELECT name from p320_19.playlists WHERE playlistid={playlistid}")
     playlist_name = CURSOR.fetchone()
     if playlist_name is None:
         print(f"playlist id:{playlistid} does not exist")
@@ -442,11 +580,11 @@ def play_playlist(playlistid):
     for song in song_ids:
         play_song(song[0])
     for album in album_ids:
-        CURSOR.execute(f"SELECT songid from p320_19.collected_songs WHERE albumid={album[0]};")
+        CURSOR.execute(
+            f"SELECT songid from p320_19.collected_songs WHERE albumid={album[0]};")
         songs = CURSOR.fetchall()
         for song in songs:
             play_song(song[0])
-
 
 
 def init():
@@ -458,7 +596,7 @@ def init():
 # check if playlist belongs to user or not
 def user_playlist_check(playlistid):
     try:
-        CURSOR.execute(user_playlistid_check_sql,(USERNAME,))
+        CURSOR.execute(user_playlistid_check_sql, (USERNAME,))
         results = CURSOR.fetchall()
         for id in results:
             if str(id[0]) == str(playlistid):
@@ -470,6 +608,7 @@ def user_playlist_check(playlistid):
 
 
 if __name__ == "__main__":
-        login()
+    login()
+
 
 
