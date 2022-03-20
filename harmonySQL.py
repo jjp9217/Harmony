@@ -6,6 +6,7 @@ It holds both the string templates for the calls, and functions for different us
 Note that the actions here are ONLY for user interactions.
 Any developer tools should use a different file.
 """
+from cgi import print_environ
 import datetime
 
 import sqlconnect
@@ -245,11 +246,15 @@ def delete_playlist_song(playlist,songid):
     # check if playlist has songid
     if user_playlist_check(playlist):
         try:
-            CURSOR.execute(delete_playlist_song_sql, (playlist, songid))
-            CONNECTION.commit()
-            print(f"song id:{songid} deleted from playlist id:{playlist}")
-        except:
-            print(f"song id:{songid} doesnot exist in playlist id:{playlist}")
+            CURSOR.execute(select_songs_in_playlist,(playlist,))
+            if CURSOR.fetchone() is None:
+                print(f"song id:{songid} doesnot exist in playlist id:{playlist}")
+            else:
+                CURSOR.execute(delete_playlist_song_sql, (playlist, songid))
+                CONNECTION.commit()
+                print(f"song id:{songid} deleted from playlist id:{playlist}")
+        except Exception as e:
+            print(e)
         finally:
             CONNECTION.commit()
     else:
@@ -276,11 +281,15 @@ def delete_playlist_album(playlist,albumid):
     # check if playlist has songid
     if user_playlist_check(playlist):
         try:
-            CURSOR.execute(delete_playlist_album_sql, (playlist, albumid))
-            CONNECTION.commit()
-            print(f"album id:{albumid} deleted from playlist id:{playlist}")
-        except:
-            print(f"album id:{albumid} doesnot exist in playlist id:{playlist}")
+            CURSOR.execute(select_albums_in_playlist,(playlist,))
+            if CURSOR.fetchone() is None:
+                print(f"album id:{albumid} doesnot exist in playlist id:{playlist}")
+            else:
+                CURSOR.execute(delete_playlist_album_sql, (playlist, albumid))
+                CONNECTION.commit()
+                print(f"album id:{albumid} deleted from playlist id:{playlist}")
+        except Exception as e:
+            print(e)
         finally:
             CONNECTION.commit()
     else:
