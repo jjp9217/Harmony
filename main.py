@@ -22,7 +22,7 @@ def help():
     print("--playlist 'id' delete song 'songid'")
     print("--playlist 'id' delete album 'albumid'")
     print("--playlist 'id' change-name 'new name'")
-    print("--search user 'string'")
+    print("--search user 'email'")
     print("--search songname 'song name'")
     print("--search artist 'song artist'")
     print("--search album 'song album'")

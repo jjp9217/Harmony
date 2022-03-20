@@ -33,14 +33,12 @@ create_playlist_SQL = "INSERT INTO p320_19.playlists(name, username) Values (%s,
 
 insert_follow_sql = "insert into p320_19.following(followed_username, following_username) values (%s,%s)"
 
-# TODO
-search_user_SQL = "SELECT * FROM p320_19.dummy;"
 
 select_friend_sql = "select * from p320_19.following where followed_username = %s and following_username = %s"
 
 user_login_check_sql = "select * from p320_19.\"user\" where username = %s and password = %s;"
 
-show_friends_sql = "select following_username FROM p320_19.following where follower_username = %s";
+show_friends_sql = "select following_username FROM p320_19.following where follower_username = %s"
 
 show_playlists_sql = "select playlistid, name FROM p320_19.playlists where username = %s order by name asc"
 
@@ -592,7 +590,7 @@ def show_playlists():
                     f"SELECT count(*) from p320_19.collection_songs WHERE playlistid={p[0]};")
                 num_songs = CURSOR.fetchone()[0]
                 CURSOR.execute(
-                    f"SELECT count(*) from p320_19.collection_albums INNER JOIN p320_19.collected_songs a on collection_albums.\"albumID\" = a.albumid WHERE playlistid={p[0]};")
+                    f"SELECT count(*) from p320_19.collection_albums INNER JOIN p320_19.song_in_album a on collection_albums.\"albumID\" = a.albumid WHERE playlistid={p[0]};")
                 num_songs += CURSOR.fetchone()[0]
 
                 # this grabs total duration
@@ -611,7 +609,7 @@ def show_playlists():
                                                   seconds=seconds)
                 # duration = CURSOR.fetchone()[0]
                 CURSOR.execute(
-                    f"SELECT sum(s.duration) from p320_19.collection_albums ca INNER JOIN p320_19.albums a on ca.\"albumID\" = a.albumid INNER JOIN p320_19.collected_songs c on a.albumid = c.albumid INNER JOIN p320_19.songs s ON s.songid = c.songid WHERE playlistid={p[0]};")
+                    f"SELECT sum(s.duration) from p320_19.collection_albums ca INNER JOIN p320_19.albums a on ca.\"albumID\" = a.albumid INNER JOIN p320_19.song_in_album c on a.albumid = c.albumid INNER JOIN p320_19.songs s ON s.songid = c.songid WHERE playlistid={p[0]};")
                 time = str(CURSOR.fetchone()[0]).split(":")
                 if time[0] != 'None':
                     hours = int(time[0])
@@ -635,12 +633,17 @@ def show_playlists():
         print(e)
 
 
-# TODO
+# finished justin
 def search_user(string):
-    user = ["xyz", "mno", "is4761", "ishan"]
-    for u in user:
-        if u[:len(string)] == string:
-            print("Found " + u)
+    search_user_SQL = f"SELECT username, first_name, last_name, email FROM p320_19.\"user\" WHERE email LIKE '%{string}%'"
+    CURSOR.execute(search_user_SQL)
+    users = CURSOR.fetchall()
+    if users[0] == None:
+        print(f"no user with email {string}")
+        return
+    print("username,  first name, last name, email")
+    for user in users:
+        print(f"{user[0]}, {user[1]}, {user[2]}, {user[3]}")
 
 
 #finished
@@ -655,22 +658,25 @@ def sort(category,order):
 # works for now but user can't play same song twice on same day because databse uses date as primary key.
 # will fix when database is updated
 def play_song(songid):
-    CURSOR.execute(f"SELECT name from p320_19.songs WHERE songid={songid}")
-    song_name = CURSOR.fetchone()
-    if song_name is None:
-        print(f"song id:{songid} does not exist")
-        return
     try:
-        current_date = str(datetime.datetime.now())
-        CURSOR.execute(play_song_SQL, (songid, USERNAME, current_date))
-        print(f"playing {song_name[0]}........")
-    except Exception as e:
-        print(e)
-    finally:
-        CONNECTION.commit()
+        CURSOR.execute(f"SELECT name from p320_19.songs WHERE songid={songid}")
+        song_name = CURSOR.fetchone()
+        if song_name is None:
+            print(f"song id:{songid} does not exist")
+            return
+        try:
+            current_date = str(datetime.datetime.now())
+            CURSOR.execute(play_song_SQL, (songid, USERNAME, current_date))
+            print(f"playing {song_name[0]}........")
+        except Exception as e:
+            print(e)
+        finally:
+            CONNECTION.commit()
+    except:
+        print(f"song id:{songid} does not exist")
 
 
-# TODO Justin
+# finished Justin
 def play_playlist(playlistid):
     CURSOR.execute(
         f"SELECT name from p320_19.playlists WHERE playlistid={playlistid}")
@@ -689,7 +695,7 @@ def play_playlist(playlistid):
         play_song(song[0])
     for album in album_ids:
         CURSOR.execute(
-            f"SELECT songid from p320_19.collected_songs WHERE albumid={album[0]};")
+            f"SELECT songid from p320_19.song_in_album WHERE albumid={album[0]};")
         songs = CURSOR.fetchall()
         for song in songs:
             play_song(song[0])
