@@ -211,9 +211,9 @@ def delete_playlist(playlist):
     # check if playlist has songid
     if user_playlist_check(playlist):
         try:
-            CURSOR.execute(delete_playlist_sql, (playlist))
-            CURSOR.execute(delete_song_with_playlist,(playlist))
-            CURSOR.execute(delete_album_with_playlist,(playlist))
+            CURSOR.execute(delete_playlist_sql, (playlist,))
+            CURSOR.execute(delete_song_with_playlist,(playlist,))
+            CURSOR.execute(delete_album_with_playlist,(playlist,))
             CONNECTION.commit()
             print(f"Playlist id:{playlist} deleted")
 
