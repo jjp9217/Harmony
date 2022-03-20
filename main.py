@@ -12,10 +12,10 @@ def help():
     print("Commands to run:")
     print("--help")
     print("--play song 'songid'")
-    print("--play playlist 'id'")
+    print("--play playlist 'playlistid'") #playing albums not part of reqs
     print("--follow 'username'")
     print("--unfollow 'username'")
-    print("--create playlist 'name'")
+    print("--create playlist 'name'")#does not work if ' or " in the name
     print("--playlist 'id' add song 'songid'")
     print("--playlist 'id' add album 'albumid'")
     print("--playlist 'id' delete song 'songid'")

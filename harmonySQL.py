@@ -38,7 +38,7 @@ select_friend_sql = "select * from p320_19.following where followed_username = %
 
 user_login_check_sql = "select * from p320_19.\"user\" where username = %s and password = %s;"
 
-show_friends_sql = "select following_username FROM p320_19.following where follower_username = %s"
+show_friends_sql = "select following_username FROM p320_19.following where following_username = %s"
 
 show_playlists_sql = "select playlistid, name FROM p320_19.playlists where username = %s order by name asc"
 
@@ -340,7 +340,7 @@ def search_artist(artist):
     If target does not exist, then alert user and stop.
     Users cannot friend themselves.
 """
-def follow():
+def follow(target):
 
     global USERNAME
     if USERNAME is None:
@@ -348,7 +348,7 @@ def follow():
         return
     #else
 
-    target = input("Provide the username to follow: >")
+    #target = input("Provide the username to follow: >")
 
     if target == USERNAME:
         print("You cannot follow yourself")
@@ -385,7 +385,7 @@ def follow():
     The inverse of the follow function. Remove a followed/following pair from
     the Following table.
 """
-def unfollow():
+def unfollow(target):
 
     global USERNAME
     if USERNAME is None:
@@ -393,34 +393,34 @@ def unfollow():
         return
     #else
 
-    CURSOR.execute(get_all_following_sql, (USERNAME,))
+    # CURSOR.execute(get_all_following_sql, (USERNAME,))
+    #
+    # raw_friends = CURSOR.fetchall()
+    #
+    # if len(raw_friends) == 0:
+    #     print("You are not following any users")
+    #     return
+    #
+    # friends = ""
+    # for e in raw_friends:
+    #     for f in e:
+    #         friends = friends + str(f) + ", "
+    #
+    # friends = friends[:-2] #remove trailing comma and space
 
-    raw_friends = CURSOR.fetchall()
+    # print("You are currently following: " + friends)
 
-    if len(raw_friends) == 0:
-        print("You are not following any users")
-        return
-
-    friends = ""
-    for e in raw_friends:
-        for f in e:
-            friends = friends + str(f) + ", "
-
-    friends = friends[:-2] #remove trailing comma and space
-
-    print("You are currently following: " + friends)
-
-    target = input("Provide the username to unfollow: >")
+    # target = input("Provide the username to unfollow: >")
 
     if target == USERNAME:
         print("You cannot unfollow yourself")
         return
 
     #check if exists (integrity check)
-    CURSOR.execute(user_exists_sql, (target,))
+    CURSOR.execute(select_friend_sql, (target, USERNAME))
     friend = CURSOR.fetchone()
     if friend is None:
-        print("You are not currently friends with '" + friend + "'")
+        print("You are not currently friends with '" + target + "'")
         return
 
     #else unfollow them
@@ -553,18 +553,22 @@ def change_playlist_name(playlistid, newname):
 # finished Ishan
 def show_friends():
     try:
-        CURSOR.execute(show_friends_sql, (USERNAME,))
+        CURSOR.execute(get_all_following_sql, (USERNAME,))
 
-        if CURSOR.fetchone() is None:
-            print("You have no friends")
+        raw_friends = CURSOR.fetchall()
 
-        else:
-            # print friends
-            print("Your playlists are: ")
-            for p in CURSOR.fetchall():
-                # Use str.join() to convert tuple to string.
-                data = ''.join(p)
-                print(data)
+        if len(raw_friends) == 0:
+            print("You are not following any users")
+            return
+
+        friends = ""
+        for e in raw_friends:
+            for f in e:
+                friends = friends + str(f) + ", "
+
+        friends = friends[:-2] #remove trailing comma and space
+
+        print("You are currently following: " + friends)
     except Exception as e:
         print(e)
 
