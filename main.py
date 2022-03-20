@@ -27,6 +27,7 @@ def help():
     print("--search artist 'song artist'")
     print("--search album 'song album'")
     print("--search genre 'song genre'")
+    print("--delete playlist 'id'")
     print("--show friends")
     print("--show playlists")
     print("--logout")
@@ -117,6 +118,10 @@ def main():
         elif split[0] == "logout":
             logout()
             LOGIN = False
+
+        elif split[0] == "delete":
+            if split[1] == "playlist":
+                delete_playlist(split[2]) 
 
         else:
             print("Invalid command. Try 'help' to get help!")

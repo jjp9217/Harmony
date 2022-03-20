@@ -195,6 +195,11 @@ def create_playlist(name):
         CONNECTION.commit()
 
 
+# TODO
+def delete_playlist(playlist):
+    print("Deleted")
+
+
 # finished Justin
 def add_playlist_song(playlist, songid):
     if user_playlist_check(playlist):
@@ -293,7 +298,6 @@ def show_friends():
 
 
 # finished Ishan
-# todo show id as well
 def show_playlists():
 
     try:
