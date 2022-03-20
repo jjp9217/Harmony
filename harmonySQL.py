@@ -49,6 +49,20 @@ select_songs_in_playlist = "SELECT songid from p320_19.collection_songs WHERE pl
 
 select_albums_in_playlist = "SELECT \"albumID\" from p320_19.collection_albums WHERE playlistid=%s;"
 
+delete_playlist_sql = "Delete from p320_19.playlists where playlistid=%s"
+
+delete_song_with_playlist="Delete from p320_19.collection_songs where playlistid=%s"
+
+delete_album_with_playlist="Delete from p320_19.collection_albums where playlistid=%s"
+
+add_song_playlist_SQL="INSERT INTO p320_19.collection_songs(playlistid, songid) Values (%s,%s);"
+
+add_album_playlist_SQL="INSERT INTO p320_19.collection_albums(playlistid, \"albumID\") Values (%s,%s);"
+
+delete_playlist_song_sql="DELETE from p320_19.collection_songs where playlistid=%s and songid=%s";
+
+delete_playlist_album_sql="DELETE from p320_19.collection_albums where playlistid=%s and \"albumID\"=%s";
+
 """
     Global Variables
 """
