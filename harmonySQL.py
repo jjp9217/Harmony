@@ -548,6 +548,13 @@ def search_user(string):
             print("Found " + u)
 
 
+#finished
+def sort(category):
+    global SORT_BY
+    SORT_BY = category
+    print("You can now sort by "+category)
+
+
 # "finished" Justin
 # works for now but user can't play same song twice on same day because databse uses date as primary key.
 # will fix when database is updated
