@@ -632,10 +632,11 @@ def search_user(string):
 
 
 #finished
-def sort(category):
-    global SORT_BY
+def sort(category,order):
+    global SORT_BY, ASC
     SORT_BY = category
-    print("You can now sort by "+category)
+    ASC=order
+    print("You can now sort by "+category+" in "+order+" order")
 
 
 # "finished" Justin

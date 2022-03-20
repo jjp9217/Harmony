@@ -27,7 +27,7 @@ def help():
     print("--search artist 'song artist'")
     print("--search album 'song album'")
     print("--search genre 'song genre'")
-    print("--sort 'songname/genre/artist/album'")
+    print("--sort 'songname/genre/artist/album' 'asc/dec'")
     print("--delete playlist 'id'")
     print("--show friends")
     print("--show playlists")
@@ -115,13 +115,25 @@ def main():
 
         elif split[0] == "sort":
             if split[1]=="album":
-                sort("album")
+                if split[2]=="asc" or split[2]=="dec":
+                    sort("album",split[2])
+                else:
+                    print(error_message)
             elif split[1]=="artist":
-                sort("artist")
+                if split[2]=="asc" or split[2]=="dec":
+                    sort("artist",split[2])
+                else:
+                    print(error_message)
             elif split[1]=="genre":
-                sort("genre")
+                if split[2]=="asc" or split[2]=="dec":
+                    sort("genre",split[2])
+                else:
+                    print(error_message)
             elif split[1]=="songname":
-                sort("songname")
+                if split[2]=="asc" or split[2]=="dec":
+                    sort("songname",split[2])
+                else:
+                    print(error_message)
             else:
                 print(error_message)
         
