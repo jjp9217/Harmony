@@ -70,6 +70,10 @@ delete_playlist_album_sql = "DELETE from p320_19.collection_albums where playlis
 make_access_timestamp_sql = "insert into p320_19.access_timestamps(timestampid, username, datetime) " \
                             "values (default,%s,%s);"
 
+ASC = "ASC"
+
+SORT_BY = "song_name"
+
 """
     Global Variables
 """
@@ -178,6 +182,8 @@ def logout():
 
 
 # TODO Satvik
+# Users can sort by song name, artist’s name, genre, and released year (ascending and
+# descending)
 def search_name(songname):
     try:
         CURSOR.execute("SELECT * FROM p320_19.songs WHERE name=%s",
