@@ -31,8 +31,12 @@ register_SQL = "insert into p320_19.\"user\" (username, acc_creation_date, passw
 
 create_playlist_SQL = "INSERT INTO p320_19.playlists(name, username) Values (%s, %s);"
 
+insert_follow_sql = "insert into p320_19.following(followed_username, following_username) values (%s,%s)"
+
 # TODO
 search_user_SQL = "SELECT * FROM p320_19.dummy;"
+
+select_friend_sql = "select * from p320_19.following where followed_username = %s and following_username = %s"
 
 user_login_check_sql = "select * from p320_19.\"user\" where username = %s and password = %s;"
 
@@ -94,8 +98,6 @@ global USERNAME
     User registration function.
     Creates a new user and adds it to the DB. Does check if name is taken to prevent crashing.
 """
-
-
 def register():
     ### Build the user input
     username = input("Provide a new username: >")
@@ -321,6 +323,20 @@ def search_artist(artist):
         print(e)
         print("No results. Try a new Search.")
 
+"""
+    A function to allow the current user to follow another user.
+    If no user is logged in, function will stop.
+    If user is already friends with target, function will alert user and stop.
+    If target does not exist, then alert user and stop.
+    Users cannot friend themselves.
+"""
+def follow():
+
+    global USERNAME
+    if USERNAME is None:
+        print("Illegal function use 'follow()', no user logged in")
+        return
+    #else
 
     target = input("Provide the username to follow: >")
 
@@ -349,9 +365,11 @@ def search_artist(artist):
         CONNECTION.commit()
         print("Successfully followed user '" + target + "'")
 
-    #else they are already following this user
     else:
         print("Cannot follow user '" + target + "', you are already following them")
+
+    #else they are already following this user
+
 
 """
     The inverse of the follow function. Remove a followed/following pair from
