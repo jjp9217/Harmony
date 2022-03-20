@@ -34,7 +34,7 @@ user_login_check_sql = "select * from p320_19.\"user\" where username = %s and p
 
 show_friends_sql="select following_username FROM p320_19.following where follower_username = %s";
 
-show_playlists_sql="select playlistid, name FROM p320_19.playlists where username = %s"
+show_playlists_sql="select playlistid, name FROM p320_19.playlists where username = %s order by name asc"
 
 add_song_playlist_SQL="INSERT INTO p320_19.collection_songs(playlistid, songid) Values (%s,%s);"
 
@@ -50,6 +50,12 @@ delete_playlist_song_sql="DELETE from p320_19.collection_songs where playlistid=
 delete_playlist_album_sql="DELETE from p320_19.collection_albums where playlistid=%s and \"albumID\"=%s";
 
 add_album_playlist_SQL="INSERT INTO p320_19.collection_albums(playlistid, \"albumID\") Values (%s,%s);"
+
+delete_playlist_sql = "Delete from p320_19.playlists where playlistid=%s"
+
+delete_song_with_playlist="Delete from p320_19.collection_songs where playlistid=%s"
+
+delete_album_with_playlist="Delete from p320_19.collection_albums where playlistid=%s"
 
 
 
@@ -195,9 +201,23 @@ def create_playlist(name):
         CONNECTION.commit()
 
 
-# TODO
+# finished Ishan
 def delete_playlist(playlist):
-    print("Deleted")
+    # check if playlist has songid
+    if user_playlist_check(playlist):
+        try:
+            CURSOR.execute(delete_playlist_sql, (playlist))
+            CURSOR.execute(delete_song_with_playlist,(playlist))
+            CURSOR.execute(delete_album_with_playlist,(playlist))
+            CONNECTION.commit()
+            print(f"Playlist id:{playlist} deleted")
+
+        except Exception as e:
+            print(e)
+        finally:
+            CONNECTION.commit()
+    else:
+        print(f"You do not own a playlist with id:{playlist}")
 
 
 # finished Justin
@@ -298,6 +318,10 @@ def show_friends():
 
 
 # finished Ishan
+# TODO 
+# Collection’s name
+# – Number of songs in the collection
+# – Total duration in minutes
 def show_playlists():
 
     try:
