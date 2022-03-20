@@ -34,7 +34,7 @@ user_login_check_sql = "select * from p320_19.\"user\" where username = %s and p
 
 show_friends_sql="select following_username FROM p320_19.following where follower_username = %s";
 
-show_playlists_sql="select name FROM p320_19.playlists where username = %s"
+show_playlists_sql="select playlistid, name FROM p320_19.playlists where username = %s"
 
 add_song_playlist_SQL="INSERT INTO p320_19.collection_songs(playlistid, songid) Values (%s,%s);"
 
@@ -307,8 +307,9 @@ def show_playlists():
             print("Your playlists are: ")
             for p in CURSOR.fetchall():
                 # Use str.join() to convert tuple to string.
-                data = ''.join(p)
-                print (data)
+                # data = ''.join(p)
+                # print (data)
+                print("id "+str(p[0])+": Name: "+p[1])
     except Exception as e:
             print(e)
 
