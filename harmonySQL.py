@@ -7,6 +7,7 @@ Note that the actions here are ONLY for user interactions.
 Any developer tools should use a different file.
 """
 import datetime
+from tkinter.messagebox import NO
 import sqlconnect
 
 """
@@ -43,6 +44,12 @@ user_playlistid_check_sql="select playlistid FROM p320_19.playlists where userna
 change_playlist_name_SQL = "Update p320_19.playlists SET name=%s WHERE playlistid=%s"
 
 play_song_SQL = "INSERT INTO p320_19.listens(songid, username, datetime) VALUES (%s, %s, %s)"
+
+delete_playlist_song_sql="DELETE from p320_19.collection_songs where playlistid=%s and songid=%s";
+
+delete_playlist_album_sql="DELETE from p320_19.collection_albums where playlistid=%s and \"albumID\"=%s";
+
+add_album_playlist_SQL="INSERT INTO p320_19.collection_albums(playlistid, \"albumID\") Values (%s,%s);"
 
 
 
@@ -204,31 +211,51 @@ def add_playlist_song(playlist, songid):
 
 
 
-# TODO
-def delete_playlist_song(name,songid):
+# finished Ishan
+def delete_playlist_song(playlist,songid):
     # check if playlist has songid
-    if(1):
-        print("Song " +songid+  " added to "+ name)
+    if user_playlist_check(playlist):
+        try:
+            CURSOR.execute(delete_playlist_song_sql, (playlist, songid))
+            CONNECTION.commit()
+            print(f"song id:{songid} deleted from playlist id:{playlist}")
+        except:
+            print(f"song id:{songid} doesnot exist in playlist id:{playlist}")
+        finally:
+            CONNECTION.commit()
     else:
-        print("Song doesnot exist")
+        print(f"You do not own a playlist with id:{playlist}")
 
 
-# TODO
-def add_playlist_album(name,albumid):
-    # check if playlist has albumid
-    if(1):
-        print("Album " +albumid+  " added to "+ name)
+# finished Ishan
+def add_playlist_album(playlist,albumid):
+    if user_playlist_check(playlist):
+        try:
+            CURSOR.execute(add_album_playlist_SQL, (playlist, albumid))
+            CONNECTION.commit()
+            print(f"album id:{albumid} added to playlist id:{playlist}")
+        except:
+            print(f"album id:{albumid} already in playlist id:{playlist}")
+        finally:
+            CONNECTION.commit()
     else:
-        print("Album already exists")
+        print(f"You do not own a playlist with id:{playlist}")
 
 
-# TODO
-def delete_playlist_album(name,albumid):
-    # check if playlist has albumid
-    if(1):
-        print("Album " +albumid+  " added to "+ name)
+# finished Ishan
+def delete_playlist_album(playlist,albumid):
+    # check if playlist has songid
+    if user_playlist_check(playlist):
+        try:
+            CURSOR.execute(delete_playlist_album_sql, (playlist, albumid))
+            CONNECTION.commit()
+            print(f"album id:{albumid} deleted from playlist id:{playlist}")
+        except:
+            print(f"album id:{albumid} doesnot exist in playlist id:{playlist}")
+        finally:
+            CONNECTION.commit()
     else:
-        print("Album doesnot exist")
+        print(f"You do not own a playlist with id:{playlist}")
 
 
 # finished Justin
@@ -245,53 +272,45 @@ def change_playlist_name(playlistid, newname):
         print(f"You do not own a playlist with id:{playlistid}")
 
 
-# TODO this is broken
+# finished Ishan
 def show_friends():
-    # First, open a database connection
-    connection = sqlconnect.connect()
 
-    # Create a cursor. It allows us to execute SQL commands.
-    cursor = connection.cursor()
+    try:
+        CURSOR.execute(show_friends_sql,(USERNAME,))
 
-    # Now try to add this person to the DB.
-    cursor.execute(show_friends_sql,(USERNAME,))
+        if CURSOR.fetchone() is None:
+            print("You have no friends")
 
-    # print friends
-    print("Your friends are: ")
-    while row is not None:
-        print(row)
-        row = cursor.fetchone()
-
-    # Make the change
-    connection.commit()
-
-    # Terminate connection
-    sqlconnect.disconnect(connection)
+        else:
+            # print friends
+            print("Your playlists are: ")
+            for p in CURSOR.fetchall():
+                # Use str.join() to convert tuple to string.
+                data = ''.join(p)
+                print (data)
+    except Exception as e:
+            print(e)
 
 
-# TODO this is broken
+# finished Ishan
+# todo show id as well
 def show_playlists():
 
-    # First, open a database connection
-    connection = sqlconnect.connect()
+    try:
+        CURSOR.execute(show_playlists_sql,(USERNAME,))
 
-    # Create a cursor. It allows us to execute SQL commands.
-    cursor = connection.cursor()
+        if CURSOR.fetchone() is None:
+            print("You have no playlists")
 
-    # Now try to add this person to the DB.
-    cursor.execute(show_playlists_sql,(USERNAME,))
-
-    # print playlists
-    print("Your playlists are: ")
-    while row is not None:
-        print(row)
-        row = cursor.fetchone()
-
-    # Make the change
-    connection.commit()
-
-    # Terminate connection
-    sqlconnect.disconnect(connection)
+        else:
+            # print playlists
+            print("Your playlists are: ")
+            for p in CURSOR.fetchall():
+                # Use str.join() to convert tuple to string.
+                data = ''.join(p)
+                print (data)
+    except Exception as e:
+            print(e)
 
 
 
