@@ -9,13 +9,12 @@ from harmonySQL import *
 
 
 def help():
-    print("\n")
     print("Commands to run:")
     print("--help")
-    print("--play song 'songid")
+    print("--play song 'songid'")
     print("--play playlist 'id'")
-    print("--follow 'email'")
-    print("--unfollow 'email'")
+    print("--follow 'username'")
+    print("--unfollow 'username'")
     print("--create playlist 'name'")
     print("--playlist 'id' add song 'songid'")
     print("--playlist 'id' add album 'albumid'")
@@ -36,11 +35,10 @@ def help():
 def main():
 
     init()
-    print("-----Welcome to Harmony-----")
-    print("Do you want to login or register?")
+    print("----- Connected to Harmony-----")
     LOGIN = False
     while not LOGIN:
-        signup = input("Enter login to login and register to create a new account with Harmony: ")
+        signup = input("Enter 'login' to login, or 'register' to create a new account: >")
         if signup.lower() == "register":
             register()
             LOGIN = True
@@ -51,6 +49,7 @@ def main():
             print("Incorrect command!")
 
     # Print the usage metssage
+    print("Tip of the Day: If you don't know an 'id' for a song, album, or playlist, you can search for them by name! \n")
     help()
 
     while LOGIN:
