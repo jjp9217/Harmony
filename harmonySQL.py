@@ -225,7 +225,7 @@ def logout():
 
 def search_name(string):
     try:
-        SQL=f"SELECT s.name, s.release_date, s.duration, al.name, a.artist_name FROM p320_19.songs s INNER JOIN \
+        SQL=f"SELECT  s.songid, s.name, s.release_date, s.duration, al.name, a.artist_name FROM p320_19.songs s INNER JOIN \
             p320_19.artist_song_production asp ON s.songid =\
             asp.songid INNER JOIN p320_19.artists a ON \
             a.artistid = asp.artistid INNER JOIN \
@@ -237,8 +237,17 @@ def search_name(string):
             where s.name like '%{string}%' ORDER BY {SORT_BY} {ASC} LIMIT 5;"
         CURSOR.execute(SQL)
         a = CURSOR.fetchall()
+        listen=[]
         for i in a:
-            print("Song: ", i[0],"Artist: ",i[4], "Release Date: ", i[1], "Duration:",i[2],"Album: ",i[3])
+            CURSOR.execute(f"SELECT COUNT(l.songid) from p320_19.listens l where l.songid = {i[0]} group by l.songid")
+            if CURSOR.fetchone() is None:
+                listen+=[0]
+            else:
+                listen+=[str(CURSOR.fetchone())]
+        count=0
+        for i in a:
+            print("Song: ", i[1],"Artist: ",i[5], "Release Date: ", i[2], "Duration:",i[3],"Album: ",i[4],"Listen: ",listen[count])
+            count+=1
     except Exception as e:
         print(e)
         print("No results. Try a new Search.")
@@ -248,34 +257,29 @@ def search_name(string):
 # TODO Satvik
 def search_album(album):
     try:
-        CURSOR.execute("SELECT * FROM p320_19.songs WHERE name LIKE '%",
-                       album, "%';")
-        rows = CURSOR.fetchall()
-
-        for row in rows:
-            print("Album: ", row[2], "Release Date: ", row[1])
-            CURSOR.execute("SELECT * FROM p320_19.albums RIGHT JOIN "
-                           "p320_19.artists ON p320_19.albums.albumid "
-                           "= p320_19.artists.artistid;")
-            rows1 = CURSOR.fetchall()
-            for r in rows1:
-                print("Artist: ", r[1])
-
-            CURSOR.execute("SELECT * FROM p320_19.albums RIGHT JOIN "
-                           "p320_19.genres ON p320_19.albums.albumid "
-                           "= p320_19.genres.genreid;")
-            rows1 = CURSOR.fetchall()
-            for r in rows1:
-                print("Genre: ", r[1])
-
-            CURSOR.execute("SELECT * FROM p320_19.albums RIGHT JOIN "
-                           "p320_19.songs ON p320_19.albums.albumid "
-                           "= p320_19.songs.songid;")
-            rows1 = CURSOR.fetchall()
-            for r in rows1:
-                print("Song: ", row[2], "Release Date: ", row[1],
-                      "Duration: ", row[3])
-
+        SQL=f"SELECT  s.songid, s.name, s.release_date, s.duration, al.name, a.artist_name FROM p320_19.songs s INNER JOIN \
+            p320_19.artist_song_production asp ON s.songid =\
+            asp.songid INNER JOIN p320_19.artists a ON \
+            a.artistid = asp.artistid INNER JOIN \
+            p320_19.song_genre sg ON s.songid = sg.songid \
+            INNER JOIN p320_19.genres g ON sg.genreid = \
+            g.genreid INNER JOIN p320_19.song_in_album sia ON s.songid =\
+            sia.songid INNER JOIN p320_19.albums al ON \
+            al.albumid = sia.albumid\
+            where al.name like '%{album}%' ORDER BY {SORT_BY} {ASC} LIMIT 5;"
+        CURSOR.execute(SQL)
+        a = CURSOR.fetchall()
+        listen=[]
+        for i in a:
+            CURSOR.execute(f"SELECT COUNT(l.songid) from p320_19.listens l where l.songid = {i[0]} group by l.songid")
+            if CURSOR.fetchone() is None:
+                listen+=[0]
+            else:
+                listen+=[str(CURSOR.fetchone())]
+        count=0
+        for i in a:
+            print("Song: ", i[1],"Artist: ",i[5], "Release Date: ", i[2], "Duration:",i[3],"Album: ",i[4],"Listen: ",listen[count])
+            count+=1
     except Exception as e:
         print(e)
         print("No results. Try a new Search.")
@@ -284,35 +288,29 @@ def search_album(album):
 # TODO Satvik
 def search_genre(genre):
     try:
-        CURSOR.execute("SELECT * FROM p320_19.genre WHERE name LIKE '%",
-                       genre, "%';")
-
-        rows = CURSOR.fetchall()
-
-        for row in rows:
-            print("Genre: ", row[1])
-            CURSOR.execute("SELECT * FROM p320_19.genres RIGHT JOIN "
-                           "p320_19.albums ON p320_19.genres.genreid "
-                           "= p320_19.albums.albumid;")
-            rows1 = CURSOR.fetchall()
-            for r in rows1:
-                print("Album: ", r[2], "Release Date: ", r[1])
-
-            CURSOR.execute("SELECT * FROM p320_19.genres RIGHT JOIN "
-                           "p320_19.artists ON p320_19.genres.genreid "
-                           "= p320_19.artists.artistid;")
-            rows1 = CURSOR.fetchall()
-            for r in rows1:
-                print("Artist: ", r[1])
-
-            CURSOR.execute("SELECT * FROM p320_19.genres RIGHT JOIN "
-                           "p320_19.songs ON p320_19.genres.genreid "
-                           "= p320_19.songs.songid;")
-            rows1 = CURSOR.fetchall()
-            for r in rows1:
-                print("Song: ", row[2], "Release Date: ", row[1],
-                      "Duration: ", row[3])
-
+        SQL=f"SELECT  s.songid, s.name, s.release_date, s.duration, al.name, a.artist_name FROM p320_19.songs s INNER JOIN \
+            p320_19.artist_song_production asp ON s.songid =\
+            asp.songid INNER JOIN p320_19.artists a ON \
+            a.artistid = asp.artistid INNER JOIN \
+            p320_19.song_genre sg ON s.songid = sg.songid \
+            INNER JOIN p320_19.genres g ON sg.genreid = \
+            g.genreid INNER JOIN p320_19.song_in_album sia ON s.songid =\
+            sia.songid INNER JOIN p320_19.albums al ON \
+            al.albumid = sia.albumid\
+            where g.name like '%{genre}%' ORDER BY {SORT_BY} {ASC} LIMIT 5;"
+        CURSOR.execute(SQL)
+        a = CURSOR.fetchall()
+        listen=[]
+        for i in a:
+            CURSOR.execute(f"SELECT COUNT(l.songid) from p320_19.listens l where l.songid = {i[0]} group by l.songid")
+            if CURSOR.fetchone() is None:
+                listen+=[0]
+            else:
+                listen+=[str(CURSOR.fetchone())]
+        count=0
+        for i in a:
+            print("Song: ", i[1],"Artist: ",i[5], "Release Date: ", i[2], "Duration:",i[3],"Album: ",i[4],"Listen: ",listen[count])
+            count+=1
     except Exception as e:
         print(e)
         print("No results. Try a new Search.")
@@ -321,35 +319,29 @@ def search_genre(genre):
 # TODO Satvik
 def search_artist(artist):
     try:
-        CURSOR.execute("SELECT * FROM p320_19.artists WHERE name LIKE '%",
-                       artist, "%';")
-
-        rows = CURSOR.fetchall()
-
-        for row in rows:
-            print("Artist: ", row[1])
-            CURSOR.execute("SELECT * FROM p320_19.artists RIGHT JOIN "
-                           "p320_19.albums ON p320_19.artists.artistid "
-                           "= p320_19.albums.albumid;")
-            rows1 = CURSOR.fetchall()
-            for r in rows1:
-                print("Album: ", r[2], "Release Date: ", r[1])
-
-            CURSOR.execute("SELECT * FROM p320_19.artists RIGHT JOIN "
-                           "p320_19.genres ON p320_19.artists.artistid "
-                           "= p320_19.genres.genreid;")
-            rows1 = CURSOR.fetchall()
-            for r in rows1:
-                print("Genre: ", r[1])
-
-            CURSOR.execute("SELECT * FROM p320_19.artists RIGHT JOIN "
-                           "p320_19.songs ON p320_19.artists.artistid "
-                           "= p320_19.songs.songid;")
-            rows1 = CURSOR.fetchall()
-            for r in rows1:
-                print("Song: ", row[2], "Release Date: ", row[1],
-                      "Duration: ", row[3])
-
+        SQL=f"SELECT  s.songid, s.name, s.release_date, s.duration, al.name, a.artist_name FROM p320_19.songs s INNER JOIN \
+            p320_19.artist_song_production asp ON s.songid =\
+            asp.songid INNER JOIN p320_19.artists a ON \
+            a.artistid = asp.artistid INNER JOIN \
+            p320_19.song_genre sg ON s.songid = sg.songid \
+            INNER JOIN p320_19.genres g ON sg.genreid = \
+            g.genreid INNER JOIN p320_19.song_in_album sia ON s.songid =\
+            sia.songid INNER JOIN p320_19.albums al ON \
+            al.albumid = sia.albumid\
+            where a.artist_name like '%{artist}%' ORDER BY {SORT_BY} {ASC} LIMIT 5;"
+        CURSOR.execute(SQL)
+        a = CURSOR.fetchall()
+        listen=[]
+        for i in a:
+            CURSOR.execute(f"SELECT COUNT(l.songid) from p320_19.listens l where l.songid = {i[0]} group by l.songid")
+            if CURSOR.fetchone() is None:
+                listen+=[0]
+            else:
+                listen+=[str(CURSOR.fetchone())]
+        count=0
+        for i in a:
+            print("Song: ", i[1],"Artist: ",i[5], "Release Date: ", i[2], "Duration:",i[3],"Album: ",i[4],"Listen: ",listen[count])
+            count+=1
     except Exception as e:
         print(e)
         print("No results. Try a new Search.")
@@ -675,7 +667,10 @@ def search_user(string):
 def sort(category,order):
     global SORT_BY, ASC
     SORT_BY = category
-    ASC=order
+    if order=="asc":
+        ASC="ASC"
+    else:
+        ASC="DESC"
     print("You can now sort by "+category+" in "+order+" order")
 
 
