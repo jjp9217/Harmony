@@ -727,6 +727,23 @@ def init():
     CURSOR = CONNECTION.cursor()
 
 
+# TODO Justin
+# show top 50 most popular songs
+def top_songs():
+    return
+
+
+# TODO Justin
+# show top 50 songs among friends
+def friend_songs():
+    return
+
+
+# TODO
+def top_genres():
+    return
+
+
 # check if playlist belongs to user or not
 def user_playlist_check(playlistid):
     try:

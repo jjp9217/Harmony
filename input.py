@@ -151,7 +151,7 @@ def input_song_artist():
 
 
 def input_song_genre():
-    file = open("Data/Song_genres.csv", newline='')
+    file = open("Data/MOCK_DATA_Song_genres.csv", newline='')
     file.readline()
     parser = csv.reader(file)
     conn = sqlconnect.connect()
@@ -188,7 +188,7 @@ def input_song_album():
 
 
 def input_album_genre():
-    file = open("Data/album_genres.csv", newline='')
+    file = open("Data/MOCK_DATA_album_genres.csv", newline='')
     file.readline()
     parser = csv.reader(file)
     conn = sqlconnect.connect()

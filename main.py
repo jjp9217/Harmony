@@ -28,6 +28,9 @@ def help():
     print("--search genre 'song genre'")
     print("--sort 'songname/genre/artist/album' 'asc/desc'")
     print("--delete playlist 'id'")
+    print("--top songs")
+    print("--top friend songs")
+    print("--top genres")
     print("--show friends")
     print("--show playlists")
     print("--logout")
@@ -164,6 +167,15 @@ def main():
                 delete_playlist(split[2]) 
             else:
                 print(error_message)
+
+        elif command == "top songs":
+            pass
+
+        elif command == "top friend songs":
+            pass
+
+        elif command == "top genres":
+            pass
 
         else:
             print(error_message)
