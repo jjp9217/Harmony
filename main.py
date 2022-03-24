@@ -4,7 +4,6 @@
 file name: main.py
 Dependencies: psycopg2, sshtunnel
 """
-import sqlconnect
 from harmonySQL import *
 
 
