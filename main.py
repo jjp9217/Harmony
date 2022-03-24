@@ -10,27 +10,27 @@ from harmonySQL import *
 
 def help():
     print("Commands to run:")
-    print("0) --help")
-    print("1) --play song 'songid'")
-    print("2) --play playlist 'playlistid'") #playing albums not part of reqs
-    print("3) --follow 'username'")
-    print("4) --unfollow 'username'")
-    print("5) --create playlist 'name'")#does not work if ' or " in the name
-    print("6) --playlist 'id' add song 'songid'")
-    print("7) --playlist 'id' add album 'albumid'")
-    print("8) --playlist 'id' delete song 'songid'")
-    print("9) --playlist 'id' delete album 'albumid'")
-    print("10) --playlist 'id' change-name 'new name'")
-    print("11) --search user 'email'")
-    print("12) --search songname 'song name'")
-    print("13) --search artist 'song artist'")
-    print("14) --search album 'song album'")
-    print("15) --search genre 'song genre'")
-    print("16) --sort 'songname/genre/artist/album' 'asc/desc'")
-    print("17) --delete playlist 'id'")
-    print("18) --show friends")
-    print("19) --show playlists")
-    print("20) --logout")
+    print("--help")
+    print("--play song 'songid'")
+    print("--play playlist 'playlistid'") #playing albums not part of reqs
+    print("--follow 'username'")
+    print("--unfollow 'username'")
+    print("--create playlist 'name'")#does not work if ' or " in the name
+    print("--playlist 'id' add song 'songid'")
+    print("--playlist 'id' add album 'albumid'")
+    print("--playlist 'id' delete song 'songid'")
+    print("--playlist 'id' delete album 'albumid'")
+    print("--playlist 'id' change-name 'new name'")
+    print("--search user 'email'")
+    print("--search songname 'song name'")
+    print("--search artist 'song artist'")
+    print("--search album 'song album'")
+    print("--search genre 'song genre'")
+    print("--sort 'songname/genre/artist/album' 'asc/desc'")
+    print("--delete playlist 'id'")
+    print("--show friends")
+    print("--show playlists")
+    print("--logout")
 
 def main():
 
