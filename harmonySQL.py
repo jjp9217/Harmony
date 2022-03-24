@@ -6,9 +6,7 @@ It holds both the string templates for the calls, and functions for different us
 Note that the actions here are ONLY for user interactions.
 Any developer tools should use a different file.
 """
-from cgi import print_environ
 import datetime
-
 import sqlconnect
 
 """
@@ -61,13 +59,13 @@ delete_song_with_playlist = "Delete from p320_19.collection_songs where playlist
 
 delete_album_with_playlist = "Delete from p320_19.collection_albums where playlistid=%s"
 
-add_song_playlist_SQL = "INSERT INTO p320_19.collection_songs(playlistid, songid) Values (%s,%s);"
+
 
 add_album_playlist_SQL = "INSERT INTO p320_19.collection_albums(playlistid, \"albumID\") Values (%s,%s);"
 
-delete_playlist_song_sql = "DELETE from p320_19.collection_songs where playlistid=%s and songid=%s";
+delete_playlist_song_sql = "DELETE from p320_19.collection_songs where playlistid=%s and songid=%s;"
 
-delete_playlist_album_sql = "DELETE from p320_19.collection_albums where playlistid=%s and \"albumID\"=%s";
+delete_playlist_album_sql = "DELETE from p320_19.collection_albums where playlistid=%s and \"albumID\"=%s;"
 
 make_access_timestamp_sql = "insert into p320_19.access_timestamps(timestampid, username, datetime) " \
                             "values (default,%s,%s);"
@@ -145,7 +143,7 @@ def register():
     USERNAME = username
 
     # Print welcome banner
-    print(welcome_banner)  # TODO ALSO USE AN ACCESS TIMESTAMP
+    print(welcome_banner)
 
 
 """
@@ -225,7 +223,7 @@ def logout():
 
 def search_name(string):
     try:
-        SQL=f"SELECT  s.songid, s.name, s.release_date, s.duration, al.name, a.artist_name FROM p320_19.songs s INNER JOIN \
+        sql=f"SELECT  s.songid, s.name, s.release_date, s.duration, al.name, a.artist_name FROM p320_19.songs s INNER JOIN \
             p320_19.artist_song_production asp ON s.songid =\
             asp.songid INNER JOIN p320_19.artists a ON \
             a.artistid = asp.artistid INNER JOIN \
@@ -235,7 +233,7 @@ def search_name(string):
             sia.songid INNER JOIN p320_19.albums al ON \
             al.albumid = sia.albumid\
             where s.name like '%{string}%' ORDER BY {SORT_BY} {ASC} LIMIT 5;"
-        CURSOR.execute(SQL)
+        CURSOR.execute(sql)
         a = CURSOR.fetchall()
         listen=[]
         for i in a:
@@ -257,7 +255,7 @@ def search_name(string):
 # TODO Satvik
 def search_album(album):
     try:
-        SQL=f"SELECT  s.songid, s.name, s.release_date, s.duration, al.name, a.artist_name FROM p320_19.songs s INNER JOIN \
+        sql=f"SELECT  s.songid, s.name, s.release_date, s.duration, al.name, a.artist_name FROM p320_19.songs s INNER JOIN \
             p320_19.artist_song_production asp ON s.songid =\
             asp.songid INNER JOIN p320_19.artists a ON \
             a.artistid = asp.artistid INNER JOIN \
@@ -267,7 +265,7 @@ def search_album(album):
             sia.songid INNER JOIN p320_19.albums al ON \
             al.albumid = sia.albumid\
             where al.name like '%{album}%' ORDER BY {SORT_BY} {ASC} LIMIT 5;"
-        CURSOR.execute(SQL)
+        CURSOR.execute(sql)
         a = CURSOR.fetchall()
         listen=[]
         for i in a:
@@ -288,7 +286,7 @@ def search_album(album):
 # TODO Satvik
 def search_genre(genre):
     try:
-        SQL=f"SELECT  s.songid, s.name, s.release_date, s.duration, al.name, a.artist_name FROM p320_19.songs s INNER JOIN \
+        sql=f"SELECT  s.songid, s.name, s.release_date, s.duration, al.name, a.artist_name FROM p320_19.songs s INNER JOIN \
             p320_19.artist_song_production asp ON s.songid =\
             asp.songid INNER JOIN p320_19.artists a ON \
             a.artistid = asp.artistid INNER JOIN \
@@ -298,7 +296,7 @@ def search_genre(genre):
             sia.songid INNER JOIN p320_19.albums al ON \
             al.albumid = sia.albumid\
             where g.name like '%{genre}%' ORDER BY {SORT_BY} {ASC} LIMIT 5;"
-        CURSOR.execute(SQL)
+        CURSOR.execute(sql)
         a = CURSOR.fetchall()
         listen=[]
         for i in a:
@@ -319,7 +317,7 @@ def search_genre(genre):
 # TODO Satvik
 def search_artist(artist):
     try:
-        SQL=f"SELECT  s.songid, s.name, s.release_date, s.duration, al.name, a.artist_name FROM p320_19.songs s INNER JOIN \
+        sql=f"SELECT  s.songid, s.name, s.release_date, s.duration, al.name, a.artist_name FROM p320_19.songs s INNER JOIN \
             p320_19.artist_song_production asp ON s.songid =\
             asp.songid INNER JOIN p320_19.artists a ON \
             a.artistid = asp.artistid INNER JOIN \
@@ -329,7 +327,7 @@ def search_artist(artist):
             sia.songid INNER JOIN p320_19.albums al ON \
             al.albumid = sia.albumid\
             where a.artist_name like '%{artist}%' ORDER BY {SORT_BY} {ASC} LIMIT 5;"
-        CURSOR.execute(SQL)
+        CURSOR.execute(sql)
         a = CURSOR.fetchall()
         listen=[]
         for i in a:
@@ -448,7 +446,7 @@ def create_playlist(name):
     try:
         CURSOR.execute(create_playlist_SQL, (name, USERNAME))
         print(f"playlist {name} created")
-    except Exception as e:
+    except Exception:
         print("error creating playlist")
     finally:
         CONNECTION.commit()
@@ -652,10 +650,10 @@ def show_playlists():
 
 # finished justin
 def search_user(string):
-    search_user_SQL = f"SELECT username, first_name, last_name, email FROM p320_19.\"user\" WHERE email LIKE '%{string}%'"
-    CURSOR.execute(search_user_SQL)
+    search_user_sql = f"SELECT username, first_name, last_name, email FROM p320_19.\"user\" WHERE email LIKE '%{string}%'"
+    CURSOR.execute(search_user_sql)
     users = CURSOR.fetchall()
-    if users[0] == None:
+    if users[0] is None:
         print(f"no user with email {string}")
         return
     print("username,  first name, last name, email")
@@ -749,8 +747,8 @@ def user_playlist_check(playlistid):
     try:
         CURSOR.execute(user_playlistid_check_sql, (USERNAME,))
         results = CURSOR.fetchall()
-        for id in results:
-            if str(id[0]) == str(playlistid):
+        for remote_id in results:
+            if str(remote_id[0]) == str(playlistid):
                 return True
         return False
     except Exception as e:
