@@ -410,25 +410,6 @@ def unfollow(target):
         return
     #else
 
-    # CURSOR.execute(get_all_following_sql, (USERNAME,))
-    #
-    # raw_friends = CURSOR.fetchall()
-    #
-    # if len(raw_friends) == 0:
-    #     print("You are not following any users")
-    #     return
-    #
-    # friends = ""
-    # for e in raw_friends:
-    #     for f in e:
-    #         friends = friends + str(f) + ", "
-    #
-    # friends = friends[:-2] #remove trailing comma and space
-
-    # print("You are currently following: " + friends)
-
-    # target = input("Provide the username to unfollow: >")
-
     if target == USERNAME:
         print("You cannot unfollow yourself")
         return
@@ -781,10 +762,31 @@ def fetch_playlists():
 
     return msg_prefix + msg_body
 
+def fetch_follow_info():
+
+    out = ""
+
+    CURSOR.execute(get_all_following_sql, ('test',))
+
+    raw_friends = CURSOR.fetchall()
+
+    if len(raw_friends) == 0:
+        out = out + "You are not currently following any users"
+
+    else:
+
+        friends = ""
+        for e in raw_friends:
+            for f in e:
+                friends = friends + str(f) + ", "
+
+        friends = friends[:-2] #remove trailing comma and space
+
+        print("You are currently following " + str(len(raw_friends)) + " friends: {"+ friends + "}")
 
 
 if __name__ == "__main__":
-    print(fetch_playlists())
+    print(fetch_follow_info())
 
 
 
