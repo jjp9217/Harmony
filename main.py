@@ -6,7 +6,6 @@ Dependencies: psycopg2, sshtunnel
 """
 from harmonySQL import *
 
-
 def help():
     print("Commands to run:")
     print("--help")
@@ -61,6 +60,9 @@ def main():
 
         if command == "help":
             help()
+
+        if command == "showme":#TODO put in user profile stuf here
+            pass
 
         elif command == "logout":
             logout()

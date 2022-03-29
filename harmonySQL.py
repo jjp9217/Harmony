@@ -70,6 +70,10 @@ delete_playlist_album_sql = "DELETE from p320_19.collection_albums where playlis
 make_access_timestamp_sql = "insert into p320_19.access_timestamps(timestampid, username, datetime) " \
                             "values (default,%s,%s);"
 
+get_number_playlists_sql = "select count(username) from p320_19.playlists where username = %s;"
+
+get_playlists_sql = "select * from p320_19.playlists where username = %s;"
+
 ASC = "ASC"
 
 SORT_BY = "s.name"
@@ -77,6 +81,8 @@ SORT_BY = "s.name"
 get_all_following_sql = "select followed_username from p320_19.following where following_username = %s"
 
 remove_friend_sql = "delete from p320_19.following where followed_username = %s and following_username = %s"
+
+get_playlists_sql = "select * from p320_19.playlists where username = %s;"
 
 """
     Global Variables
@@ -756,11 +762,29 @@ def user_playlist_check(playlistid):
         return False
 
 
+
+
+
+def fetch_playlists():
+    CURSOR.execute(get_playlists_sql, ('test',))
+    records = CURSOR.fetchall()
+    msg_prefix = "You have " + str(len(records)) + " playlists, {"
+    msg_body = ""
+    for s in records:
+        name = s[1]
+        if name == "":
+            name = "<unnamed playlist>"
+        msg_body = msg_body + "'" + name + "', "
+
+    msg_body = msg_body[:-2]
+    msg_body = msg_body + "}"
+
+    return msg_prefix + msg_body
+
+
+
 if __name__ == "__main__":
-        login()
-
-
-
+    print(fetch_playlists())
 
 
 
