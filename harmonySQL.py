@@ -84,6 +84,8 @@ remove_friend_sql = "delete from p320_19.following where followed_username = %s 
 
 get_playlists_sql = "select * from p320_19.playlists where username = %s;"
 
+top_50_sql = "SELECT s.name FROM p320_19.songs s, p320_19.listens l WHERE s.songid = l.songid and l.datetime > current_date - interval '30' day GROUP BY s.name ORDER BY count(*) DESC LIMIT 50;"
+
 """
     Global Variables
 """
@@ -712,10 +714,14 @@ def init():
     CURSOR = CONNECTION.cursor()
 
 
-# TODO Justin
+# finished Justin
 # show top 50 most popular songs
 def top_songs():
-    return
+    CURSOR.execute(top_50_sql)
+    top = CURSOR.fetchall()
+    print("top 50 songs...")
+    for song in top:
+        print(song[0])
 
 
 # TODO Justin

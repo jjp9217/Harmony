@@ -61,7 +61,7 @@ def main():
         if command == "help":
             help()
 
-        if command == "showme":#TODO put in user profile stuf here
+        elif command == "showme":#TODO put in user profile stuf here
             pass
 
         elif command == "logout":
@@ -170,7 +170,7 @@ def main():
                 print(error_message)
 
         elif command == "top songs":
-            pass
+            top_songs()
 
         elif command == "top friend songs":
             pass
