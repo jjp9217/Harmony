@@ -60,7 +60,6 @@ delete_song_with_playlist = "Delete from p320_19.collection_songs where playlist
 delete_album_with_playlist = "Delete from p320_19.collection_albums where playlistid=%s"
 
 
-
 add_album_playlist_SQL = "INSERT INTO p320_19.collection_albums(playlistid, \"albumID\") Values (%s,%s);"
 
 delete_playlist_song_sql = "DELETE from p320_19.collection_songs where playlistid=%s and songid=%s;"
@@ -82,7 +81,7 @@ get_all_following_sql = "select followed_username from p320_19.following where f
 
 remove_friend_sql = "delete from p320_19.following where followed_username = %s and following_username = %s"
 
-get_playlists_sql = "select * from p320_19.playlists where username = %s;"
+get_all_user_followers_sql = "select following_username from p320_19.following where followed_username = %s"
 
 top_50_sql = "SELECT s.name FROM p320_19.songs s, p320_19.listens l WHERE s.songid = l.songid and l.datetime > current_date - interval '30' day GROUP BY s.name ORDER BY count(*) DESC LIMIT 50;"
 
@@ -781,13 +780,16 @@ def fetch_playlists():
 
     return msg_prefix + msg_body
 
-def fetch_follow_info():
+def fetch_follow_info(raw_flag = False):
 
     out = ""
 
-    CURSOR.execute(get_all_following_sql, ('test',))
+    CURSOR.execute(get_all_following_sql, (USERNAME,))
 
     raw_friends = CURSOR.fetchall()
+
+    if raw_flag:
+        return raw_friends
 
     if len(raw_friends) == 0:
         out = out + "You are not currently following any users"
@@ -800,12 +802,38 @@ def fetch_follow_info():
                 friends = friends + str(f) + ", "
 
         friends = friends[:-2] #remove trailing comma and space
-
+        #this might print something super long TODO address?
         print("You are currently following " + str(len(raw_friends)) + " friends: {"+ friends + "}")
 
 
+def fetch_user_followed_info(raw_flag=False):
+    out = ""
+
+    CURSOR.execute(get_all_user_followers_sql, (USERNAME,))
+
+    raw_friends = CURSOR.fetchall()
+
+    if raw_flag:
+        return raw_friends
+
+    if len(raw_friends) == 0:
+        out = out + "You are not currently being followed by any users"
+
+    else:
+
+        friends = ""
+        for e in raw_friends:
+            for f in e:
+                friends = friends + str(f) + ", "
+
+        friends = friends[:-2]  # remove trailing comma and space
+        # this might print something super long TODO address?
+        print("You are currently being followed by " + str(len(raw_friends)) + " users: {" + friends + "}")
+
+
 if __name__ == "__main__":
-    print(fetch_follow_info())
+    USERNAME = 'test'
+    print(fetch_user_followed_info())
 
 
 
