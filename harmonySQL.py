@@ -83,11 +83,24 @@ remove_friend_sql = "delete from p320_19.following where followed_username = %s 
 
 get_all_user_followers_sql = "select following_username from p320_19.following where followed_username = %s"
 
-top_50_sql = "SELECT s.name FROM p320_19.songs s, p320_19.listens l WHERE s.songid = l.songid and l.datetime > current_date - interval '30' day GROUP BY s.name ORDER BY count(*) DESC LIMIT 50;"
+top_50_sql = "SELECT s.name FROM p320_19.songs s, p320_19.listens l WHERE s.songid = l.songid " \
+             "and l.datetime > current_date - interval '30' day GROUP BY s.name ORDER BY count(*) DESC LIMIT 50;"
 
-top_friends_sql = "SELECT s.name FROM p320_19.songs s, p320_19.listens l WHERE s.songid = l.songid and l.username in (SELECT f.followed_username FROM  p320_19.following f WHERE f.following_username = %s) GROUP BY s.name ORDER BY count(*) DESC LIMIT 50;"
+top_friends_sql = "SELECT s.name FROM p320_19.songs s, p320_19.listens l WHERE s.songid = l.songid and l.username in" \
+                  " (SELECT f.followed_username FROM  p320_19.following f WHERE f.following_username = %s) " \
+                  "GROUP BY s.name ORDER BY count(*) DESC LIMIT 50;"
 
-top_genres_sql = "SELECT g.name FROM p320_19.songs s, p320_19.listens l, p320_19.genres g, p320_19.song_genre sg WHERE s.songid = l.songid and s.songid = sg.songid and sg.genreid = g.genreid and extract(MONTH FROM  l.datetime ) = extract(MONTH FROM current_date) GROUP BY g.name ORDER BY count(*) DESC LIMIT 5;"
+top_genres_sql = "SELECT g.name FROM p320_19.songs s, p320_19.listens l, p320_19.genres g, p320_19.song_genre sg WHERE" \
+                 " s.songid = l.songid and s.songid = sg.songid and sg.genreid = g.genreid " \
+                 "and extract(MONTH FROM  l.datetime ) = extract(MONTH FROM current_date) " \
+                 "GROUP BY g.name ORDER BY count(*) DESC LIMIT 5;"
+
+get_top_user_artists_sql = "select count(songid), artist_name from " \
+                       "(select artist_song_production.songid, artists.artist_name " \
+                       "from p320_19.artist_song_production,p320_19.listens,p320_19.artists " \
+                       "where username = %s and artists.artistid = artist_song_production.artistid and " \
+                       "listens.songid = artist_song_production.songid) as saan " \
+                       "group by artist_name order by count(songid) desc limit 10;"
 
 """
     Global Variables
@@ -831,9 +844,14 @@ def fetch_user_followed_info(raw_flag=False):
         print("You are currently being followed by " + str(len(raw_friends)) + " users: {" + friends + "}")
 
 
+def get_top_user_artists(raw_flag = False):
+    CURSOR.execute(get_top_user_artists_sql, (USERNAME,))
+    print(CURSOR.fetchall())
+
+
 if __name__ == "__main__":
-    USERNAME = 'test'
-    print(fetch_user_followed_info())
+    USERNAME = 'justin'
+    print(get_top_user_artists())
 
 
 
