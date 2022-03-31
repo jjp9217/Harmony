@@ -173,10 +173,10 @@ def main():
             top_songs()
 
         elif command == "top friend songs":
-            pass
+            friend_songs()
 
         elif command == "top genres":
-            pass
+            top_genres()
 
         else:
             print(error_message)
