@@ -71,6 +71,9 @@ def main():
         elif command == "eda":
             eda()
 
+        elif command == "eda_listen":
+            eda_listen()
+
         elif split[0] == "follow":
             follow(split[1])
 

@@ -865,32 +865,40 @@ def eda():
             al.albumid = sia.albumid";
         CURSOR.execute(sql)
         a = CURSOR.fetchall()
-        # listen=[]
-        # for i in a:
-        #     CURSOR.execute(f"SELECT COUNT(l.songid) from p320_19.listens l where l.songid = {i[0]} group by l.songid")
-        #     if CURSOR.fetchone() is None:
-        #         listen+=[0]
-        #     else:
-        #         listen+=[str(CURSOR.fetchone())]
-        # count=0
-        with open('genre_listens.csv', 'w') as f:
+        with open('genre_allsongs.csv', 'w') as f:
                 # create the csv writer
                 writer = csv.writer(f)
                 for i in a:
-                    # print("Song: ", i[1],"Artist: ",i[5], "Release Date: ", i[2], "Duration:",i[3],"Album: ",i[4],"Listen: ",listen[count])
-                    # count+=1
-
-                    # open the file in the write mode
-
-                        # write a row to the csv file
                         writer.writerow([i[1],i[2]])
-
-
             # print("Song: "+i[1]+" Genre: "+i[2])
     except Exception as e:
         print(e)
         print("No results. Try a new Search.")
 
+
+def eda_listen():
+    try:
+        sql=f"SELECT  s.songid, s.name, g.name FROM p320_19.songs s INNER JOIN \
+            p320_19.listens l on s.songid = l.songid INNER JOIN\
+            p320_19.artist_song_production asp ON s.songid =\
+            asp.songid INNER JOIN p320_19.artists a ON \
+            a.artistid = asp.artistid INNER JOIN \
+            p320_19.song_genre sg ON s.songid = sg.songid \
+            INNER JOIN p320_19.genres g ON sg.genreid = \
+            g.genreid INNER JOIN p320_19.song_in_album sia ON s.songid =\
+            sia.songid INNER JOIN p320_19.albums al ON \
+            al.albumid = sia.albumid where l.username = '{USERNAME}'";
+        CURSOR.execute(sql)
+        a = CURSOR.fetchall()
+        with open('genre_listens.csv', 'w') as f:
+                # create the csv writer
+                writer = csv.writer(f)
+                for i in a:
+                        writer.writerow([i[1],i[2]])
+            # print("Song: "+i[1]+" Genre: "+i[2])
+    except Exception as e:
+        print(e)
+        print("No results. Try a new Search.")
 
 
 if __name__ == "__main__":
