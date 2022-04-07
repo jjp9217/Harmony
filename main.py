@@ -68,6 +68,9 @@ def main():
             logout()
             LOGIN = False
 
+        elif command == "eda":
+            eda()
+
         elif split[0] == "follow":
             follow(split[1])
 
