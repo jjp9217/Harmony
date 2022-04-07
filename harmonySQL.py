@@ -901,6 +901,33 @@ def eda_listen():
         print("No results. Try a new Search.")
 
 
+def recommendation():
+    try:
+        # sql=f"SELECT g.name, COUNT(g.name) FROM p320_19.songs s INNER JOIN \
+        #     p320_19.listens l on s.songid = l.songid INNER JOIN\
+        #     p320_19.song_genre sg ON s.songid = sg.songid \
+        #     INNER JOIN p320_19.genres g ON sg.genreid = \
+        #     g.genreid where l.username = '{USERNAME}' group by g.name";
+        sql=f"SELECT COUNT(sg.genreid) FROM p320_19.songs s INNER JOIN \
+            p320_19.listens l on s.songid = l.songid INNER JOIN\
+            p320_19.song_genre sg ON s.songid = sg.songid \
+            INNER JOIN p320_19.genres g ON sg.genreid = \
+            g.genreid where l.username = '{USERNAME}' group by sg.genreid";
+        CURSOR.execute(sql)
+        a = CURSOR.fetchall()
+        # with open('genre_listens.csv', 'w') as f:
+                # create the csv writer
+                # writer = csv.writer(f)
+        for i in a:
+                # writer.writerow([i[1],int(i[2])])
+                print(" Genre:"+ str(i[0]))
+            # print("Song: "+i[1]+" Genre: "+i[2])
+    except Exception as e:
+        print(e)
+        print("No results. Try a new Search.")
+
+
+
 if __name__ == "__main__":
     USERNAME = 'justin'
     print(get_top_user_artists())
