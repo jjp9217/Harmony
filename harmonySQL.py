@@ -908,24 +908,41 @@ def recommendation():
         #     p320_19.song_genre sg ON s.songid = sg.songid \
         #     INNER JOIN p320_19.genres g ON sg.genreid = \
         #     g.genreid where l.username = '{USERNAME}' group by g.name";
-        sql=f"SELECT COUNT(sg.genreid) FROM p320_19.songs s INNER JOIN \
+        sql=f"SELECT g.name, g.genreid, COUNT(g.genreid) FROM p320_19.songs s INNER JOIN \
             p320_19.listens l on s.songid = l.songid INNER JOIN\
             p320_19.song_genre sg ON s.songid = sg.songid \
             INNER JOIN p320_19.genres g ON sg.genreid = \
-            g.genreid where l.username = '{USERNAME}' group by sg.genreid";
+            g.genreid where l.username = '{USERNAME}' group by g.genreid order by COUNT(g.genreid) DESC";
         CURSOR.execute(sql)
         a = CURSOR.fetchall()
-        # with open('genre_listens.csv', 'w') as f:
-                # create the csv writer
-                # writer = csv.writer(f)
         for i in a:
-                # writer.writerow([i[1],int(i[2])])
-                print(" Genre:"+ str(i[0]))
-            # print("Song: "+i[1]+" Genre: "+i[2])
+                print("Genre id: "+str(i[1])+" Genre: "+ str(i[0])+" Count: "+str(i[2]))
+        recommendation_listen_genre(a)
     except Exception as e:
         print(e)
         print("No results. Try a new Search.")
 
+
+def recommendation_listen_genre(list):
+    try:
+        id = set()
+        for i in range(len(list)):
+            id.add(list[i][1])
+        id = tuple(id)
+        sql=f"SELECT  s.songid, s.name, COUNT(s.songid) FROM p320_19.songs s INNER JOIN \
+            p320_19.listens l on s.songid = l.songid INNER JOIN\
+            p320_19.song_genre sg ON s.songid = sg.songid \
+            INNER JOIN p320_19.genres g ON sg.genreid = \
+            g.genreid INNER JOIN p320_19.song_in_album sia ON s.songid =\
+            sia.songid INNER JOIN p320_19.albums al ON \
+            al.albumid = sia.albumid where g.genreid in {id} group by s.songid order by COUNT(s.songid) DESC";
+        CURSOR.execute(sql)
+        a = CURSOR.fetchall()    
+        for i in a:
+                print(" Songid: "+ str(i[0])+" Name: "+str(i[1])+" Count: "+str(i[2]))
+    except Exception as e:
+        print(e)
+        print("No results. Try a new Search.")
 
 
 if __name__ == "__main__":
