@@ -110,6 +110,41 @@ def input_songs():
     durations.close()
 
 
+def input_more_songs():
+    songs = open("music_data.txt", newline='')
+    songs.readline()
+    s_parser = csv.reader(songs, delimiter=',')
+    conn = sqlconnect.connect()
+    cur = conn.cursor()
+    conn.commit()
+    for line in s_parser:
+        i = int(line[3])
+        time = convert(i)
+        try:
+            query = """INSERT INTO p320_19.songs (songid, 
+            release_date, name, duration) 
+            VALUES (%s, %s, %s, %s)"""
+            tuple = (line[0], line[1], line[2], time)
+            cur.execute(query, tuple)
+            print("Data inserted successfully into the songs table using "
+                  "the prepared statement")
+        except Exception as e:
+            print(e)
+        finally:
+            conn.commit()
+    songs.close()
+
+
+def convert(seconds):
+    seconds = seconds % (24 * 3600)
+    hour = seconds // 3600
+    seconds %= 3600
+    minutes = seconds // 60
+    seconds %= 60
+
+    return "%d:%02d:%02d" % (hour, minutes, seconds)
+
+
 def input_genre():
     file = open("Data/Genres.txt", newline='')
     file.readline()
@@ -237,5 +272,4 @@ if __name__ == "__main__":
     # input_songs()
     # input_artists()
     # input_albums()
-
 
