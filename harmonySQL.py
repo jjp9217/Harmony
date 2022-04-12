@@ -878,7 +878,7 @@ def eda():
 
 def eda_listen():
     try:
-        sql=f"SELECT  s.songid, s.name, g.name FROM p320_19.songs s INNER JOIN \
+        sql=f"SELECT  s.songid, s.name, g.name,l.datetime FROM p320_19.songs s INNER JOIN \
             p320_19.listens l on s.songid = l.songid INNER JOIN\
             p320_19.artist_song_production asp ON s.songid =\
             asp.songid INNER JOIN p320_19.artists a ON \
@@ -894,7 +894,7 @@ def eda_listen():
                 # create the csv writer
                 writer = csv.writer(f)
                 for i in a:
-                        writer.writerow([i[1],i[2]])
+                        writer.writerow([i[1],i[2],str(i[3]).split()[0]])
             # print("Song: "+i[1]+" Genre: "+i[2])
     except Exception as e:
         print(e)
