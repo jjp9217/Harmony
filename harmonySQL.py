@@ -6,6 +6,7 @@ It holds both the string templates for the calls, and functions for different us
 Note that the actions here are ONLY for user interactions.
 Any developer tools should use a different file.
 """
+from calendar import weekday
 import datetime
 import sqlconnect
 import csv
@@ -13,6 +14,8 @@ import csv
 """
     Constants -----------------------------------------------------------------
 """
+
+weekday={0:"Monday",1:"Tuesday",2:"Wednesday",3:"Thursday",4:"Friday",5:"Saturday",6:"Sunday"}
 
 welcome_banner = "\n////// Welcome to Harmony \\\\\\\\\\\\ \n"
 
@@ -894,7 +897,13 @@ def eda_listen():
                 # create the csv writer
                 writer = csv.writer(f)
                 for i in a:
-                        writer.writerow([i[1],i[2],str(i[3]).split()[0]])
+                    # date = str(i[3]).split()[0]
+                    # year = int(date.split("-")[0])
+                    # month = int(date.split("-")[1])
+                    # day = int(date.split("-")[2])
+
+                    # day_of_the_week = datetime.date.weekday(year,month,day)
+                    writer.writerow([i[1],i[2],weekday[i[3].weekday()]])
             # print("Song: "+i[1]+" Genre: "+i[2])
     except Exception as e:
         print(e)
