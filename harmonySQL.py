@@ -103,7 +103,15 @@ get_top_user_artists_sql = "select count(songid), artist_name from " \
                        "group by artist_name order by count(songid) desc limit 10;"
 
 #TODO SQL IN PROGRESS
-get_top_user_playlist_artists_sql = "select count(songid), artist_name from (select artist_song_production.songid, artists.artist_name from p320_19.artist_song_production,p320_19.artists, p320_19.playlists, p320_19.collection_songs, p320_19.songs where username = %s and p320_19.collection_songs.playlistid = p320_19.playlists.playlistid and p320_19.artist_song_production.songid = p320_19.collection_songs.songid and artists.artistid = artist_song_production.artistid and p320_19.songs.songid = artist_song_production.songid ) as saan group by artist_name order by count(songid) desc limit 10;"
+get_top_user_playlist_artists_sql = "select count(songid), artist_name from " \
+                                    "(select artist_song_production.songid, artists.artist_name " \
+                                    "from p320_19.artist_song_production,p320_19.artists, p320_19.playlists, " \
+                                    "p320_19.collection_songs, p320_19.songs " \
+                                    "where username = %s and p320_19.collection_songs.playlistid = p320_19.playlists.playlistid " \
+                                    "and p320_19.artist_song_production.songid = p320_19.collection_songs.songid " \
+                                    "and artists.artistid = artist_song_production.artistid " \
+                                    "and p320_19.songs.songid = artist_song_production.songid ) " \
+                                    "as saan group by artist_name order by count(songid) desc limit 10;"
 
 """
     Global Variables
