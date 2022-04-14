@@ -957,9 +957,22 @@ def recommendation_listen_genre(list):
         print("No results. Try a new Search.")
 
 
+
+
+# sql=f"SELECT g.genreid,COUNT() FROM p320_19.songs s INNER JOIN \
+#             p320_19.listens l on s.songid = l.songid INNER JOIN\
+#             p320_19.artist_song_production asp ON s.songid =\
+#             asp.songid INNER JOIN p320_19.artists a ON \
+#             a.artistid = asp.artistid INNER JOIN \
+#             p320_19.song_genre sg ON s.songid = sg.songid \
+#             INNER JOIN p320_19.genres g ON sg.genreid = \
+#             g.genreid INNER JOIN p320_19.song_in_album sia ON s.songid =\
+#             sia.songid INNER JOIN p320_19.albums al ON \
+#             al.albumid = sia.albumid group by g.genreid where year=2018 LIMIT 5";
+
 def eda_listen():
     try:
-        sql=f"SELECT  s.songid, s.name, g.genreid,l.datetime FROM p320_19.songs s INNER JOIN \
+        sql=f"SELECT g.genreid,l.datetime FROM p320_19.songs s INNER JOIN \
             p320_19.listens l on s.songid = l.songid INNER JOIN\
             p320_19.artist_song_production asp ON s.songid =\
             asp.songid INNER JOIN p320_19.artists a ON \
@@ -974,7 +987,7 @@ def eda_listen():
         with open('genre_listens.csv', 'w') as f:
                 # create the csv writer
                 writer = csv.writer(f)
-                writer.writerow("Genreid","Year")
+                writer.writerow(["Genreid","Year"])
                 for i in a:
                     date = str(i[3]).split()[0]
                     year = int(date.split("-")[0])
@@ -984,6 +997,40 @@ def eda_listen():
                         # day_of_the_week = datetime.date.weekday(year,month,day)
                         writer.writerow([i[2],year])
                         # writer.writerow([i[1],i[2],i[3]])
+            # print("Song: "+i[1]+" Genre: "+i[2])
+    except Exception as e:
+        print(e)
+        print("No results. Try a new Search.")
+
+
+
+def top_genre(year):
+    try:
+        sql=f"SELECT g.genreid,COUNT(g.genreid) FROM p320_19.songs s INNER JOIN \
+            p320_19.listens l on s.songid = l.songid INNER JOIN\
+            p320_19.artist_song_production asp ON s.songid =\
+            asp.songid INNER JOIN p320_19.artists a ON \
+            a.artistid = asp.artistid INNER JOIN \
+            p320_19.song_genre sg ON s.songid = sg.songid \
+            INNER JOIN p320_19.genres g ON sg.genreid = \
+            g.genreid INNER JOIN p320_19.song_in_album sia ON s.songid =\
+            sia.songid INNER JOIN p320_19.albums al ON \
+            al.albumid = sia.albumid where EXTRACT(YEAR FROM l.datetime)={year} group by g.genreid order by COUNT(g.genreid) DESC LIMIT 5";
+        CURSOR.execute(sql)
+        a = CURSOR.fetchall()
+        with open('top_genre.csv', 'w') as f:
+                # create the csv writer
+                writer = csv.writer(f)
+                writer.writerow(["Genreid","Count"])
+                for i in a:
+                    # date = str(i[3]).split()[0]
+                    # year = int(date.split("-")[0])
+                    # month_no = int(date.split("-")[1])
+                    # day = int(date.split("-")[2])
+                    # if year>=2018:
+                    # day_of_the_week = datetime.date.weekday(year,month,day)
+                    writer.writerow([i[0],i[1]])
+                    # writer.writerow([i[1],i[2],i[3]])
             # print("Song: "+i[1]+" Genre: "+i[2])
     except Exception as e:
         print(e)
@@ -1018,7 +1065,12 @@ def count_unique():
 if __name__ == "__main__":
     USERNAME = 'justin'
     # count_unique()
-    eda_listen()
+    # eda_listen()
+    # top_genre(2018)
+    # top_genre(2019)
+    # top_genre(2020)
+    # top_genre(2021)
+    top_genre(2022)
 
 
 
