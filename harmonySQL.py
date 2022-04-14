@@ -102,17 +102,6 @@ get_top_user_artists_sql = "select count(songid), artist_name from " \
                        "listens.songid = artist_song_production.songid) as saan " \
                        "group by artist_name order by count(songid) desc limit 10;"
 
-#TODO SQL IN PROGRESS
-get_top_user_playlist_artists_sql = "select count(songid), artist_name from " \
-                                    "(select artist_song_production.songid, artists.artist_name " \
-                                    "from p320_19.artist_song_production,p320_19.artists, p320_19.playlists, " \
-                                    "p320_19.collection_songs, p320_19.songs " \
-                                    "where username = %s and p320_19.collection_songs.playlistid = p320_19.playlists.playlistid " \
-                                    "and p320_19.artist_song_production.songid = p320_19.collection_songs.songid " \
-                                    "and artists.artistid = artist_song_production.artistid " \
-                                    "and p320_19.songs.songid = artist_song_production.songid ) " \
-                                    "as saan group by artist_name order by count(songid) desc limit 10;"
-
 """
     Global Variables
 """
@@ -784,10 +773,6 @@ def user_playlist_check(playlistid):
         print(e)
         return False
 
-
-
-
-
 def fetch_playlists():
     CURSOR.execute(get_playlists_sql, ('test',))
     records = CURSOR.fetchall()
@@ -856,13 +841,19 @@ def fetch_user_followed_info(raw_flag=False):
 
 
 def get_top_user_artists(raw_flag = False):
-    CURSOR.execute(get_top_user_artists_sql, (USERNAME,))
-    print(CURSOR.fetchall())
 
+    CURSOR.execute(get_top_user_artists_sql, (USERNAME,))
+    top = CURSOR.fetchall()
+
+    print("Your top artists are:")
+    rank = 1
+    for s in top:
+        print(str(rank) + ": " + s[1])
+        rank += 1
 
 if __name__ == "__main__":
     USERNAME = 'justin'
-    print(get_top_user_artists())
+    get_top_user_artists()
 
 
 
