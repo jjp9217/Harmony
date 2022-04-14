@@ -221,7 +221,6 @@ def input_song_album():
     file.close()
 
 
-
 def input_album_genre():
     file = open("Data/MOCK_DATA_album_genres.csv", newline='')
     file.readline()
