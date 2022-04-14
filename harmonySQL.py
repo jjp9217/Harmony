@@ -7,8 +7,10 @@ Note that the actions here are ONLY for user interactions.
 Any developer tools should use a different file.
 """
 from calendar import month, weekday
+from collections import UserString
 import datetime
 from itertools import groupby
+from lib2to3.pgen2.token import MINUS
 import sqlconnect
 import csv
 
@@ -913,45 +915,91 @@ def eda_listen():
         print("No results. Try a new Search.")
 
 
-def recommendation():
+def demo_recommendation():
     try:
-        # sql=f"SELECT g.name, COUNT(g.name) FROM p320_19.songs s INNER JOIN \
-        #     p320_19.listens l on s.songid = l.songid INNER JOIN\
-        #     p320_19.song_genre sg ON s.songid = sg.songid \
-        #     INNER JOIN p320_19.genres g ON sg.genreid = \
-        #     g.genreid where l.username = '{USERNAME}' group by g.name";
         sql=f"SELECT g.name, g.genreid, COUNT(g.genreid) FROM p320_19.songs s INNER JOIN \
             p320_19.listens l on s.songid = l.songid INNER JOIN\
             p320_19.song_genre sg ON s.songid = sg.songid \
             INNER JOIN p320_19.genres g ON sg.genreid = \
-            g.genreid where l.username = '{USERNAME}' group by g.genreid order by COUNT(g.genreid) DESC";
+            g.genreid where l.username = '{USERNAME}' group by g.genreid order by COUNT(g.genreid) DESC LIMIT 5";
         CURSOR.execute(sql)
         a = CURSOR.fetchall()
+        print("Your top 5 genres:")
         for i in a:
-                print("Genre id: "+str(i[1])+" Genre: "+ str(i[0])+" Count: "+str(i[2]))
+                print("Genre id: "+str(i[1])+" Genre: "+ str(i[0])+" Your listening count: "+str(i[2]))
         recommendation_listen_genre(a)
     except Exception as e:
         print(e)
         print("No results. Try a new Search.")
 
+def recommendation():
+    try:
+        # getting user's top songs and their count
+        sql=f"SELECT s.songid, COUNT(s.songid) from p320_19.songs s INNER JOIN \
+            p320_19.listens l on s.songid = l.songid INNER JOIN\
+            p320_19.song_genre sg ON s.songid = sg.songid \
+            INNER JOIN p320_19.genres g ON sg.genreid = \
+            g.genreid where l.username = '{USERNAME}' group by s.songid ";
+        
+        # dictionary to store genre id and its count
+        genre={}
+        CURSOR.execute(sql)
+        a = CURSOR.fetchall()
+        for i in a:
+                minisql=f"SELECT DISTINCT(sg.genreid) from p320_19.songs s INNER JOIN \
+                p320_19.listens l on s.songid = l.songid INNER JOIN\
+                p320_19.song_genre sg ON s.songid = sg.songid \
+                INNER JOIN p320_19.genres g ON sg.genreid = \
+                g.genreid where sg.songid ={i[0]}";
+                CURSOR.execute(minisql)
+                mini = CURSOR.fetchall()
+                # mini[0][0] fetches genre id and i[1] gives count per song of that genre
+                if mini[0][0] in genre:
+                    genre[mini[0][0]]+=i[1]
+                else:
+                    genre[mini[0][0]]=i[1]
+        # all genreid and their count
+        # print(genre)
+
+        # creates a list of genre based on their counts in descending order
+        genre_list=[]
+        for i in range(len(genre)):
+            key = max(genre, key=genre.get)
+            genre_list.append(key)
+            genre[key]=0
+        recommendation_listen_genre(genre_list)
+    except Exception as e:
+        print(e)
+        print("No results. Try a new Search.")
+    
 
 def recommendation_listen_genre(list):
     try:
         id = set()
         for i in range(len(list)):
-            id.add(list[i][1])
+            id.add(list[i])
         id = tuple(id)
-        sql=f"SELECT  s.songid, s.name, COUNT(s.songid) FROM p320_19.songs s INNER JOIN \
+        # id contains tuple of all genres in escending order of their listens
+        # print(id)
+
+        # selects top songs based on genre and sorts it according to the count of all users
+        # minus is used to remove the songs already heard by the user
+        sql=f"SELECT s.songid, s.name, COUNT(s.songid)FROM p320_19.songs s INNER JOIN \
             p320_19.listens l on s.songid = l.songid INNER JOIN\
             p320_19.song_genre sg ON s.songid = sg.songid \
             INNER JOIN p320_19.genres g ON sg.genreid = \
             g.genreid INNER JOIN p320_19.song_in_album sia ON s.songid =\
             sia.songid INNER JOIN p320_19.albums al ON \
-            al.albumid = sia.albumid where g.genreid in {id} group by s.songid order by COUNT(s.songid) DESC";
+            al.albumid = sia.albumid where g.genreid in {id} and s.songid NOT In\
+            (Select s.songid from p320_19.songs s INNER JOIN \
+            p320_19.listens l on s.songid = l.songid where l.username = '{USERNAME}' group by s.songid)\
+            group by s.songid order by COUNT(s.songid) DESC LIMIT 10";\
+            
         CURSOR.execute(sql)
         a = CURSOR.fetchall()    
+        print("\nTop songs recommended based on your top genres: ")
         for i in a:
-                print(" Songid: "+ str(i[0])+" Name: "+str(i[1])+" Count: "+str(i[2]))
+                print("Songid: "+ str(i[0])+" Name: "+str(i[1])+" Times Heard by different users: "+str(i[2]))
     except Exception as e:
         print(e)
         print("No results. Try a new Search.")
@@ -972,31 +1020,31 @@ def recommendation_listen_genre(list):
 
 def eda_listen():
     try:
-        sql=f"SELECT g.genreid,l.datetime FROM p320_19.songs s INNER JOIN \
-            p320_19.listens l on s.songid = l.songid INNER JOIN\
-            p320_19.artist_song_production asp ON s.songid =\
-            asp.songid INNER JOIN p320_19.artists a ON \
-            a.artistid = asp.artistid INNER JOIN \
-            p320_19.song_genre sg ON s.songid = sg.songid \
-            INNER JOIN p320_19.genres g ON sg.genreid = \
-            g.genreid INNER JOIN p320_19.song_in_album sia ON s.songid =\
-            sia.songid INNER JOIN p320_19.albums al ON \
-            al.albumid = sia.albumid";
+        sql=f"SELECT l.songid,l.datetime FROM p320_19.listens l";
         CURSOR.execute(sql)
         a = CURSOR.fetchall()
-        with open('genre_listens.csv', 'w') as f:
+        with open('weekday.csv', 'w') as f:
                 # create the csv writer
                 writer = csv.writer(f)
-                writer.writerow(["Genreid","Year"])
+                writer.writerow(["Genreid","Day"])
+                count=0
                 for i in a:
-                    date = str(i[3]).split()[0]
+                    time = str(i[1]).split()[1]
+                    hour = int(time.split(":")[0])
+                    date = str(i[1]).split()[0]
                     year = int(date.split("-")[0])
                     month_no = int(date.split("-")[1])
                     day = int(date.split("-")[2])
-                    if year>=2018:
+                    # writer.writerow([i[0],weekday[i[1].weekday()]])
+                    if hour>=20 or hour<=4:
                         # day_of_the_week = datetime.date.weekday(year,month,day)
-                        writer.writerow([i[2],year])
+                        writer.writerow([i[0],"night"])
                         # writer.writerow([i[1],i[2],i[3]])
+                    elif hour>=4 and hour <12:
+                        writer.writerow([i[0],"evening"])
+                    else:
+                        writer.writerow([i[0],"day"])
+                    count=count+1
             # print("Song: "+i[1]+" Genre: "+i[2])
     except Exception as e:
         print(e)
@@ -1070,7 +1118,8 @@ if __name__ == "__main__":
     # top_genre(2019)
     # top_genre(2020)
     # top_genre(2021)
-    top_genre(2022)
+    # top_genre(2022)
+    recommendation()
 
 
 
