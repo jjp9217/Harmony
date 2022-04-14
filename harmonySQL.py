@@ -773,9 +773,13 @@ def user_playlist_check(playlistid):
         print(e)
         return False
 
-def fetch_playlists():
+def fetch_playlists(raw_flag = False):
     CURSOR.execute(get_playlists_sql, ('test',))
     records = CURSOR.fetchall()
+
+    if raw_flag:
+        return records
+
     msg_prefix = "You have " + str(len(records)) + " playlists, {"
     msg_body = ""
     for s in records:
@@ -845,15 +849,26 @@ def get_top_user_artists(raw_flag = False):
     CURSOR.execute(get_top_user_artists_sql, (USERNAME,))
     top = CURSOR.fetchall()
 
-    print("Your top artists are:")
+    if raw_flag:
+        return top
+
+    out = ""
     rank = 1
     for s in top:
-        print(str(rank) + ": " + s[1])
+        out = out + str(rank) + ": " + s[1] + "\n"
         rank += 1
+    return out
+
+def show_me():
+    print("Profile for " + USERNAME)
+    print("You have " + str(len(fetch_user_followed_info(True))) + " followers, and are following " +
+          str(len(fetch_follow_info(True))) + " other users")
+    print("You have " + str(len(fetch_playlists(True)))+ " playlists, and your top artists are: ")
+    print(get_top_user_artists())
 
 if __name__ == "__main__":
     USERNAME = 'justin'
-    get_top_user_artists()
+    show_me()
 
 
 
