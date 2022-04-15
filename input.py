@@ -201,6 +201,23 @@ def input_song_genre():
 
     sqlconnect.disconnect(conn)
     file.close()
+    
+    
+def input_more_song_genre():
+    conn = sqlconnect.connect()
+    cur = conn.cursor()
+    cur.execute("SELECT songid FROM p320_19.songs WHERE songid > 994 "
+                "ORDER BY songid ASC")
+    songid_res = cur.fetchall()
+    conn.commit()
+    for i in range(len(songid_res)):
+        s_id = songid_res[i][0]
+        g_id = random.randint(752, 856)
+        cur.execute(f"INSERT INTO p320_19.song_genre(songid, genreid) "
+                    f"Values ({s_id},{g_id});")
+        print("Successfully added an entry")
+    conn.commit()
+    sqlconnect.disconnect(conn)
 
 
 def input_song_album():
@@ -264,6 +281,7 @@ if __name__ == "__main__":
     input_album_genre()
     # input_genre()
     # input_song_genre()
+    # input_more_song_genre()
     # input_album_genre()
     # input_song_album()
     # input_artists()
