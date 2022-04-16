@@ -31,7 +31,10 @@ def help():
     print("--top genres")
     print("--show friends")
     print("--show playlists")
+    print("--showme")
+    print("--recommend")
     print("--logout")
+
 
 def main():
 
@@ -62,7 +65,10 @@ def main():
             help()
 
         elif command == "showme":#TODO put in user profile stuf here
-            pass
+            show_me()
+
+        elif command == "recommend":
+            recommendation()
 
         elif command == "logout":
             logout()
@@ -177,6 +183,8 @@ def main():
 
         elif command == "top genres":
             top_genres()
+
+
 
         else:
             print(error_message)

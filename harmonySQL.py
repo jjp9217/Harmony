@@ -247,7 +247,7 @@ def logout():
 
 def search_name(string):
     try:
-        sql=f"SELECT  s.songid, s.name, s.release_date, s.duration, al.name, a.artist_name FROM p320_19.songs s INNER JOIN \
+        sql = f"SELECT  s.songid, s.name, s.release_date, s.duration, al.name, a.artist_name FROM p320_19.songs s INNER JOIN \
             p320_19.artist_song_production asp ON s.songid =\
             asp.songid INNER JOIN p320_19.artists a ON \
             a.artistid = asp.artistid INNER JOIN \
@@ -859,12 +859,86 @@ def get_top_user_artists(raw_flag = False):
         rank += 1
     return out
 
+
 def show_me():
     print("Profile for " + USERNAME)
     print("You have " + str(len(fetch_user_followed_info(True))) + " followers, and are following " +
           str(len(fetch_follow_info(True))) + " other users")
     print("You have " + str(len(fetch_playlists(True)))+ " playlists, and your top artists are: ")
     print(get_top_user_artists())
+
+
+def recommendation():
+    try:
+        # getting user's top songs and their count
+        sql = f"SELECT s.songid, COUNT(s.songid) from p320_19.songs s INNER JOIN \
+            p320_19.listens l on s.songid = l.songid INNER JOIN\
+            p320_19.song_genre sg ON s.songid = sg.songid \
+            INNER JOIN p320_19.genres g ON sg.genreid = \
+            g.genreid where l.username = '{USERNAME}' group by s.songid ";
+
+        # dictionary to store genre id and its count
+        genre = {}
+        CURSOR.execute(sql)
+        a = CURSOR.fetchall()
+        for i in a:
+            minisql = f"SELECT DISTINCT(sg.genreid) from p320_19.songs s INNER JOIN \
+                p320_19.listens l on s.songid = l.songid INNER JOIN\
+                p320_19.song_genre sg ON s.songid = sg.songid \
+                INNER JOIN p320_19.genres g ON sg.genreid = \
+                g.genreid where sg.songid ={i[0]}";
+            CURSOR.execute(minisql)
+            mini = CURSOR.fetchall()
+            # mini[0][0] fetches genre id and i[1] gives count per song of that genre
+            if mini[0][0] in genre:
+                genre[mini[0][0]] += i[1]
+            else:
+                genre[mini[0][0]] = i[1]
+        # all genreid and their count
+        # print(genre)
+
+        # creates a list of genre based on their counts in descending order
+        genre_list = []
+        for i in range(len(genre)):
+            key = max(genre, key=genre.get)
+            genre_list.append(key)
+            genre[key] = 0
+        recommendation_listen_genre(genre_list)
+    except Exception as e:
+        print(e)
+        print("No results. Try a new Search.")
+
+
+def recommendation_listen_genre(list):
+    try:
+        id = set()
+        for i in range(len(list)):
+            id.add(list[i])
+        id = tuple(id)
+        # id contains tuple of all genres in escending order of their listens
+        # print(id)
+
+        # selects top songs based on genre and sorts it according to the count of all users
+        # minus is used to remove the songs already heard by the user
+        sql = f"SELECT s.songid, s.name, COUNT(s.songid)FROM p320_19.songs s INNER JOIN \
+            p320_19.listens l on s.songid = l.songid INNER JOIN\
+            p320_19.song_genre sg ON s.songid = sg.songid \
+            INNER JOIN p320_19.genres g ON sg.genreid = \
+            g.genreid INNER JOIN p320_19.song_in_album sia ON s.songid =\
+            sia.songid INNER JOIN p320_19.albums al ON \
+            al.albumid = sia.albumid where g.genreid in {id} and s.songid NOT In\
+            (Select s.songid from p320_19.songs s INNER JOIN \
+            p320_19.listens l on s.songid = l.songid where l.username = '{USERNAME}' group by s.songid)\
+            group by s.songid order by COUNT(s.songid) DESC LIMIT 10;"
+        CURSOR.execute(sql)
+        a = CURSOR.fetchall()
+        print("\nTop songs recommended based on your top genres: ")
+        for i in a:
+            print("Songid: " + str(i[0]) + " Name: " + str(i[1]) + " Times Heard by different users: " + str(i[2]))
+    except Exception as e:
+        print(e)
+        print("No results. Try a new Search.")
+
 
 if __name__ == "__main__":
     USERNAME = 'justin'

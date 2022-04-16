@@ -13,7 +13,6 @@ register_SQL = "insert into p320_19.\"user\" (username, acc_creation_date, passw
 get_users_sql = "select username from p320_19.\"user\""
 
 
-
 conn = sqlconnect.connect()
 cur = conn.cursor()
 
@@ -36,7 +35,7 @@ def generate_users():
     parser = csv.reader(file)
     for user in parser:
         cur.execute(register_SQL, (user[4], user[5], user[3], user[0], user[1], user[2]))
-        conn.commit()
+    conn.commit()
 
 
 def generate_weekend_listens():
@@ -49,7 +48,6 @@ def generate_weekend_listens():
         cur.execute(play_song_SQL, (song, user, date))
         # print(f"{user} {song} {date}")
     conn.commit()
-
 
 
 def random_date(weekend):
@@ -69,8 +67,6 @@ def add_time(date):
     minutes = random.randrange(0, 60)
     sec = random.randrange(0, 60)
     return pd.Timestamp.combine(date, datetime.time(hours, minutes, sec))
-
-
 
 
 if __name__ == "__main__":
