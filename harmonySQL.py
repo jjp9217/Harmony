@@ -1035,16 +1035,16 @@ def eda_listen():
                     year = int(date.split("-")[0])
                     month_no = int(date.split("-")[1])
                     day = int(date.split("-")[2])
-                    # writer.writerow([i[0],weekday[i[1].weekday()]])
-                    if hour>=20 or hour<=4:
-                        # day_of_the_week = datetime.date.weekday(year,month,day)
-                        writer.writerow([i[0],"night"])
-                        # writer.writerow([i[1],i[2],i[3]])
-                    elif hour>=4 and hour <12:
-                        writer.writerow([i[0],"evening"])
-                    else:
-                        writer.writerow([i[0],"day"])
-                    count=count+1
+                    writer.writerow([i[0],weekday[i[1].weekday()]])
+                    # if hour>=20 or hour<=4:
+                    #     # day_of_the_week = datetime.date.weekday(year,month,day)
+                    #     writer.writerow([i[0],"night"])
+                    #     # writer.writerow([i[1],i[2],i[3]])
+                    # elif hour>=4 and hour <12:
+                    #     writer.writerow([i[0],"evening"])
+                    # else:
+                    #     writer.writerow([i[0],"day"])
+                    # count=count+1
             # print("Song: "+i[1]+" Genre: "+i[2])
     except Exception as e:
         print(e)
